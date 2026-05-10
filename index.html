@@ -221,6 +221,13 @@
       color: #fff;
     }
 
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
     .pill {
       background: rgba(0, 0, 0, 0.2);
       border: 1px solid var(--line);
@@ -240,7 +247,7 @@
     .items {
       display: grid;
       gap: 10px;
-      max-height: 400px;
+      max-height: 350px;
       overflow-y: auto;
       padding-right: 6px;
     }
@@ -317,12 +324,12 @@
     .selected-list {
       display: grid;
       gap: 8px;
-      max-height: 150px;
+      max-height: 180px;
       overflow-y: auto;
       padding-right: 6px;
-      margin-top: 16px;
-      border-top: 1px solid var(--line);
-      padding-top: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
     }
 
     .selected-item {
@@ -709,7 +716,6 @@
       to { transform: translateX(0); opacity: 1; }
     }
     
-    /* 画面切り替え用のスタイル */
     #packingSection {
       display: none;
     }
@@ -778,12 +784,13 @@
         <section class="card">
           <h2>荷物を選ぶ</h2>
           <div class="items" id="items"></div>
-          <div class="selected-list" id="selectedList"></div>
         </section>
 
         <section class="card">
           <h2 id="resultTitle">現在の状態</h2>
           <div class="results">
+            <div class="selected-list" id="selectedList"></div>
+            
             <div class="score-box" id="scoreBox" style="display: none;">
               <div class="score-circle" id="scoreCircle">
                 <div class="score-inner">
@@ -915,11 +922,11 @@
     };
 
     const regions = [
-      { id: 'plains', name: '草原', flavor: 'ノーマル', note: 'すごしやすく標準的な旅。', capBonus: 0, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '草原は基本に忠実。落ち着いて荷物を組もう。' },
-      { id: 'snowfield', name: '雪原', flavor: '食料消費大', note: '寒さで消耗しやすい。', capBonus: 0, weightBonus: 0, foodNeed: 26, dangerLimit: 8, banner: '雪の道は腹が減る。食料を多めに持っていこう。' },
-      { id: 'mountain', name: '山岳', flavor: '重量制限厳しい', note: '軽さが正義。', capBonus: 0, weightBonus: -4, foodNeed: 18, dangerLimit: 8, banner: '山岳地帯は重い荷物がそのまま罪になる。' },
-      { id: 'cave', name: '洞窟', flavor: 'サイズ制限厳しい', note: '大きい荷物は入らない。', capBonus: -4, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '洞窟は詰め込みすぎると通れない。かさばるものは置いていこう' },
-      { id: 'demon', name: '魔王領', flavor: 'サイズ制限緩・薬必須', note: '危険な場所。ポーションか薬草が必須。', capBonus: 2, weightBonus: 2, foodNeed: 18, dangerLimit: 4, banner: '魔物が出てくる可能性があり危険。しっかり準備していこう。' }
+      { id: 'plains', name: '草原', flavor: 'ノーマル', note: 'すごしやすく標準的な旅', capBonus: 0, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '草原は基本に忠実。落ち着いて荷物を組もう。' },
+      { id: 'snowfield', name: '雪原', flavor: '食料消費大', note: '寒さで消耗しやすい', capBonus: 0, weightBonus: 0, foodNeed: 26, dangerLimit: 8, banner: '雪の道は腹が減る。食料を多めに持っていこう。' },
+      { id: 'mountain', name: '山岳', flavor: '重量制限厳しい', note: '軽さが正義', capBonus: 0, weightBonus: -4, foodNeed: 18, dangerLimit: 8, banner: '山岳地帯は重い荷物がそのまま罪になる。' },
+      { id: 'cave', name: '洞窟', flavor: 'サイズ制限厳しい', note: '大きい荷物は入らない', capBonus: -4, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '洞窟は詰め込みすぎると通れない。かさばるものは置いていこう' },
+      { id: 'demon', name: '魔王領', flavor: 'サイズ制限緩・薬必須', note: '危険な場所。ポーションか薬草が必須', capBonus: 2, weightBonus: 2, foodNeed: 18, dangerLimit: 4, banner: '魔物が出てくる可能性があり危険。しっかり準備していこう。' }
     ];
 
     const weather = [
@@ -1234,7 +1241,11 @@
     }
 
     function updatePreview() {
-      if (!setupDone || !currentJourney || !currentCompanion) return;
+      if (!setupDone || !currentJourney || !currentCompanion) {
+        els.breakdown.innerHTML = 'まずは条件を決めよう。荷物はそのあとで選べるようになるよ。';
+        return;
+      }
+      
       if (isJourneyFinished) return;
 
       const rules = getCurrentRules();
@@ -1275,6 +1286,7 @@
 
       renderSelectedList();
       renderJourneySummary();
+      els.setoffBtn.disabled = false;
     }
 
     function buildMoodContext(companionId, rules, selectedItems, totals) {
@@ -1704,7 +1716,7 @@
             <h3>更新情報</h3>
             <ul class="update-list">
               <li>2026/05/10：UIの改修とチュートリアルを追加しました。</li>
-              <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。難易度調整を行いました。</li>
+              <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。また、100点を出しにくくする難易度・ペナルティ調整を行いました。</li>
               <li>2026/05/08：様々な条件で獲得できる「実績解除（アチーブメント）」を追加しました。獲得した実績は「実績一覧」から確認できます。</li>
               <li>2026/05/07：「古代勇者の旅支度」を試作しました。</li>
               </ul>
