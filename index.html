@@ -247,7 +247,7 @@
     .items {
       display: grid;
       gap: 10px;
-      max-height: 350px;
+      max-height: 400px;
       overflow-y: auto;
       padding-right: 6px;
     }
@@ -808,8 +808,8 @@
             <div class="breakdown" id="breakdown">まずは条件を決めよう。荷物はそのあとで選べるようになるよ。</div>
             
             <div class="btn-row">
-              <button class="btn-good" id="setoffBtn">旅に出る</button>
-              <button class="btn-secondary" id="resetBtn">荷物を全部外す</button>
+              <button class="btn-good" id="setoffBtn" style="display: none;">旅に出る</button>
+              <button class="btn-secondary" id="resetBtn" style="display: none;">荷物を全部外す</button>
               <button class="btn-primary" id="restartBtn" style="display: none; grid-column: 1 / -1;">もう一度旅に出る</button>
               <button class="btn-info" id="shareBtn" style="display: none; grid-column: 1 / -1; margin-top: 8px;">結果をコピーして共有</button>
             </div>
@@ -832,6 +832,7 @@
       { id: 'jam', name: 'ジャム', emoji: '🫙', size: 1, weight: 4, danger: 0, food: 2, morale: 6, note: '小さいのに重い。パンと一緒に食べるとさらに気分が上がる。', tags: ['ごほうび'] },
       { id: 'lantern', name: 'ランタン', emoji: '🪔', size: 2, weight: 1, danger: -2, food: 0, morale: 1, note: '周囲を明るく照らし、危険度を下げる。', tags: ['安全'] },
       { id: 'blanket', name: 'ふわふわの毛布', emoji: '🛌', size: 3, weight: 1, danger: 0, food: 0, morale: 4, note: 'かさばるが、温かくて安心感がある。', tags: ['士気UP'] },
+      { id: 'spice', name: 'スパイス', emoji: '🌶️', size: 1, weight: 1, danger: 1, food: 0, morale: 0, note: '干し肉や干し魚にひとつまみ。', tags: ['調味料'] },
       { id: 'mystery', name: 'よっちの謎袋', emoji: '🕳️', size: 2, weight: 2, danger: 0, food: 0, morale: 0, note: '旅に出る時に中身が確定する。', tags: ['カオス'] }
     ];
 
@@ -1306,8 +1307,9 @@
       const tooManyPotions = potionCount >= Math.max(2, Math.ceil(selectedItems.length / 2));
       const hasBread = countById('bread') > 0;
       const hasJam = countById('jam') > 0;
+      const hasSpice = countById('spice') > 0;
 
-      return { foodGap, dangerGap, dangerOver, dangerTooLow, dangerJustRight, meatCount, potionCount, hasCookie, hasFruit, hasFish, hasMeat, hasMystery, tooManyPotions, hasBread, hasJam };
+      return { foodGap, dangerGap, dangerOver, dangerTooLow, dangerJustRight, meatCount, potionCount, hasCookie, hasFruit, hasFish, hasMeat, hasMystery, tooManyPotions, hasBread, hasJam, hasSpice };
     }
 
     function computeMorale(rules, totals, ctx) {
@@ -1315,6 +1317,17 @@
       const id = currentCompanion;
       
       if (ctx.hasBread && ctx.hasJam) morale += 5;
+
+      // スパイスのシナジー（肉か魚と一緒に）
+      if (ctx.hasSpice && (ctx.hasMeat || ctx.hasFish)) {
+        if (id === 'ou') {
+          morale += 10;
+        } else if (id === 'fubuki') {
+          // 辛いのが苦手なので上がらない
+        } else {
+          morale += 5;
+        }
+      }
 
       if (id === 'machi') {
         if (ctx.dangerTooLow) morale -= 4;
@@ -1715,7 +1728,7 @@
             <div class="journey-badge">お知らせ</div>
             <h3>更新情報</h3>
             <ul class="update-list">
-              <li>2026/05/10：UIの改修とチュートリアルを追加しました。</li>
+              <li>2026/05/10：新アイテム「スパイス」を追加し、キャラクター固有のシナジー効果を実装しました。またUIの改修を行いました。</li>
               <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。また、100点を出しにくくする難易度・ペナルティ調整を行いました。</li>
               <li>2026/05/08：様々な条件で獲得できる「実績解除（アチーブメント）」を追加しました。獲得した実績は「実績一覧」から確認できます。</li>
               <li>2026/05/07：「古代勇者の旅支度」を試作しました。</li>
@@ -1845,6 +1858,18 @@
       }
     });
 
+    els.difficulty.addEventListener('change', () => {
+      renderSetupMeta();
+      if (setupDone && !isJourneyFinished) {
+        renderJourneySummary();
+        updatePreview();
+      }
+    });
+
+    renderItems();
+    renderSetupMeta();
+    renderSelectedList();
+    updatePreview();
   </script>
 </body>
 </html>
