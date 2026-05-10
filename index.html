@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古代勇者の旅支度</title>
+  <style>
+    :root {
+      --bg: #131417;
+      --bg-2: #1e1f24;
+      --panel: rgba(30, 32, 38, 0.95);
+      --panel-2: rgba(45, 48, 56, 0.95);
+      --panel-3: rgba(58, 62, 71, 0.95);
+      --text: #e2e4e9;
+      --muted: #9ba1ad;
+      --gold: #c5a365;
+      --gold-2: #e6c88a;
+      --line: rgba(255, 255, 255, 0.08);
+      --line-2: rgba(197, 163, 101, 0.3);
+      --shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+      --radius: 12px;
+      --warn: #e67e22;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(197, 163, 101, 0.08), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(80, 120, 160, 0.06), transparent 30%),
+        var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 46px 46px;
+      opacity: 0.3;
+      mix-blend-mode: screen;
+    }
+
+    .app {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header,
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--bg-2));
+      border: 1px solid var(--line-2);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after,
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      border-radius: calc(var(--radius) - 6px);
+      pointer-events: none;
+    }
+
+    .header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-text {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      letter-spacing: 0.04em;
+      font-weight: 800;
+      color: var(--gold-2);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .btn-info {
+      background: rgba(197, 163, 101, 0.1);
+      border: 1px solid var(--line-2);
+      color: var(--gold-2);
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      width: auto;
+      border-radius: 20px;
+      z-index: 2;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+    
+    .btn-info:hover {
+      background: rgba(197, 163, 101, 0.2);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.03fr 0.97fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card { padding: 18px; }
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 1.1rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .controls { display: grid; gap: 14px; }
+    .control-row { display: grid; gap: 8px; }
+    .control-row label {
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+
+    select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(180deg, var(--panel-3), var(--panel-2));
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23c5a365" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position-x: calc(100% - 10px);
+      background-position-y: center;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 36px 12px 14px;
+      font: inherit;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    select:focus {
+      border-color: var(--gold);
+    }
+    select option {
+      background-color: var(--bg-2);
+      color: var(--text);
+    }
+
+    button {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--panel-3), var(--panel-2));
+      color: var(--text);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+      cursor: pointer;
+      transition: transform 0.08s ease, filter 0.18s ease, opacity 0.2s ease;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    button:hover { filter: brightness(1.1); }
+    button:active { transform: translateY(1px); }
+    button:disabled { cursor: not-allowed; opacity: 0.4; filter: grayscale(0.5); }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #a67c3e, #805c28);
+      border-color: rgba(230, 200, 138, 0.4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(180deg, #3a3f4a, #262930);
+      color: var(--text);
+    }
+
+    .btn-good {
+      background: linear-gradient(180deg, #276b53, #184735);
+      border-color: rgba(100, 200, 150, 0.3);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    .pill {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+    .pill strong {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      color: var(--gold);
+      font-weight: normal;
+    }
+
+    .items {
+      display: grid;
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .items::-webkit-scrollbar,
+    .selected-list::-webkit-scrollbar,
+    .modal::-webkit-scrollbar,
+    .achieve-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .items::-webkit-scrollbar-thumb,
+    .selected-list::-webkit-scrollbar-thumb,
+    .modal::-webkit-scrollbar-thumb,
+    .achieve-container::-webkit-scrollbar-thumb {
+      background: var(--panel-3);
+      border-radius: 4px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+    }
+
+    .item.disabled { opacity: 0.6; }
+
+    .item-main { display: grid; gap: 6px; }
+    .item-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .item-stats {
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-self: end;
+      flex-wrap: nowrap;
+    }
+
+    .quantity button {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 6px;
+      font-size: 1.2rem;
+      line-height: 1;
+      display: grid;
+      place-items: center;
+      background: var(--panel-2);
+    }
+
+    .qty-value {
+      min-width: 24px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--gold-2);
+      font-size: 1.1rem;
+    }
+
+    .selected-list {
+      display: grid;
+      gap: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+      padding-right: 6px;
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    .selected-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+    .selected-item small { color: var(--muted); font-size: 0.8rem; }
+
+    .results { display: grid; gap: 14px; }
+
+    .score-box {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 120px 1fr;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+
+    @media (max-width: 640px) {
+      .score-box { grid-template-columns: 1fr; }
+    }
+
+    .score-circle {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--gold) 0deg, rgba(255,255,255,0.04) 0deg);
+      border: 1px solid var(--line-2);
+      box-shadow: 0 0 20px rgba(197, 163, 101, 0.1);
+    }
+
+    .score-inner {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #23262e, #131519);
+      border: 1px solid rgba(197, 163, 101, 0.2);
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .score-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--gold-2);
+    }
+    .score-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .dialogue {
+      line-height: 1.7;
+      min-height: 90px;
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .breakdown {
+      display: grid;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+    }
+    .breakdown span.highlight { color: var(--text); font-weight: 700; }
+    .breakdown span.warn { color: var(--warn); font-weight: 700; }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+      padding: 12px;
+      text-align: center;
+      background: rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    .locked-hint {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 12, 16, 0.85);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      z-index: 30;
+      backdrop-filter: blur(4px);
+    }
+
+    .overlay.hidden { display: none; }
+
+    .modal {
+      width: min(740px, 100%);
+      max-height: min(85vh, 760px);
+      background: linear-gradient(180deg, var(--panel), var(--bg-2));
+      border: 1px solid var(--line-2);
+      border-radius: 12px;
+      box-shadow: 0 32px 90px rgba(0,0,0,0.6);
+      padding: 24px;
+      position: relative;
+    }
+    
+    .modal-content-wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-height: 70vh;
+    }
+
+    .modal h3 {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      color: var(--gold-2);
+    }
+
+    .modal-text {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0 0 18px;
+      font-size: 0.95rem;
+    }
+
+    .update-list {
+      padding-left: 20px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .update-list li {
+      margin-bottom: 8px;
+    }
+
+    .modal-journey {
+      display: grid;
+      gap: 16px;
+    }
+
+    .modal-journey .hero-line {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--gold-2);
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .journey-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      background: rgba(197, 163, 101, 0.15);
+      border: 1px solid rgba(197, 163, 101, 0.3);
+      color: var(--gold-2);
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    .companion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 680px) {
+      .companion-grid { grid-template-columns: 1fr; }
+    }
+
+    .companion-card {
+      text-align: left;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      color: var(--text);
+      min-height: 120px;
+      position: relative;
+    }
+
+    .companion-card.selected {
+      background: rgba(197, 163, 101, 0.08);
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(197, 163, 101, 0.15);
+    }
+
+    .companion-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 1.05rem;
+      color: var(--gold-2);
+    }
+
+    .companion-emoji {
+      font-size: 1.4rem;
+      width: 1.6em;
+      text-align: center;
+    }
+
+    .companion-desc {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .modal-footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 14px;
+    }
+
+    .loader {
+      border: 4px solid var(--line);
+      border-top: 4px solid var(--gold);
+      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+
+    .achieve-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      border-radius: 8px;
+      position: relative;
+      cursor: help;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .achieve-item.unlocked {
+      border-color: rgba(197, 163, 101, 0.4);
+      background: rgba(197, 163, 101, 0.05);
+      color: var(--gold-2);
+    }
+    .achieve-item.locked {
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+    .tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-2);
+      border: 1px solid var(--gold);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: 0.2s;
+      z-index: 10;
+      box-shadow: var(--shadow);
+      pointer-events: none;
+    }
+    
+    .achieve-item:nth-child(1) .tooltip,
+    .achieve-item:nth-child(2) .tooltip,
+    .achieve-item:nth-child(3) .tooltip,
+    .achieve-item:nth-child(4) .tooltip {
+      bottom: auto;
+      top: 110%;
+    }
+
+    .achieve-item:hover .tooltip,
+    .achieve-item:active .tooltip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--panel);
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: var(--gold-2);
+      animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.4s 4.6s forwards;
+      pointer-events: auto;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; }
+    }
+
+    #copy-toast-container {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .copy-toast {
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      animation: slideInLeft 0.3s ease, fadeOut 0.3s 2.7s forwards;
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    /* 画面切り替え用のスタイル */
+    #packingSection {
+      display: none;
+    }
+    #setupSection {
+      max-width: 600px;
+      margin: 40px auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="copy-toast-container"></div>
+  <div id="toast-container"></div>
+
+  <div class="overlay hidden" id="overlay" aria-hidden="true">
+    <div class="modal" id="modal"></div>
+  </div>
+
+  <div class="overlay hidden" id="subOverlay" aria-hidden="true">
+    <div class="modal" id="subModal"></div>
+  </div>
+
+  <div class="app">
+    <div class="header">
+      <div class="header-text">
+        <h1>古代勇者の旅支度</h1>
+        <p class="subtitle">条件をもとに荷物を詰め、同行者の満足度を高くしよう！</p>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn-info" id="achievementsBtn">🏆 実績一覧</button>
+        <button type="button" class="btn-info" id="updateInfoBtn">✨ 更新情報</button>
+      </div>
+    </div>
+
+    <div id="setupSection">
+      <section class="card">
+        <h2>出発前の設定</h2>
+        <div class="controls">
+          <div class="control-row">
+            <label for="difficulty">難易度</label>
+            <select id="difficulty">
+              <option value="easy">かんたん</option>
+              <option value="normal" selected>ふつう</option>
+              <option value="hard">むずかしい</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <button class="btn-primary" id="setupBtn">条件を読んで旅支度しろ！</button>
+            <div class="locked-hint">難易度を選び、行き先と同行者を決めてから荷造りを始めます。</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="packingSection">
+      <section class="card" style="margin-bottom: 16px;">
+        <h2>今回の旅の条件</h2>
+        <div class="results" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div class="pill"><strong>難易度</strong><span id="journeyDiffText"></span></div>
+          <div class="pill"><strong>状態</strong><span id="journeyText"></span></div>
+          <div class="pill"><strong>同行者</strong><span id="companionText"></span></div>
+          <div class="pill"><strong>ルール</strong><span id="ruleText"></span></div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="card">
+          <h2>荷物を選ぶ</h2>
+          <div class="items" id="items"></div>
+          <div class="selected-list" id="selectedList"></div>
+        </section>
+
+        <section class="card">
+          <h2 id="resultTitle">現在の状態</h2>
+          <div class="results">
+            <div class="score-box" id="scoreBox" style="display: none;">
+              <div class="score-circle" id="scoreCircle">
+                <div class="score-inner">
+                  <div>
+                    <div class="score-value" id="scoreValue">0</div>
+                    <div class="score-label">満足度</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="dialogue" id="dialogue"></div>
+              </div>
+            </div>
+
+            <div class="breakdown" id="breakdown">まずは条件を決めよう。荷物はそのあとで選べるようになるよ。</div>
+            
+            <div class="btn-row">
+              <button class="btn-good" id="setoffBtn">旅に出る</button>
+              <button class="btn-secondary" id="resetBtn">荷物を全部外す</button>
+              <button class="btn-primary" id="restartBtn" style="display: none; grid-column: 1 / -1;">もう一度旅に出る</button>
+              <button class="btn-info" id="shareBtn" style="display: none; grid-column: 1 / -1; margin-top: 8px;">結果をコピーして共有</button>
+            </div>
+            <div class="footer-note">※ よっちの謎袋は旅に出る時に中身が確定するよ。ハイリスクハイリターン！</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const items = [
+      { id: 'meat', name: '干し肉', emoji: '🥩', size: 3, weight: 4, danger: 1, food: 8, morale: 1, note: '腹持ちがよく、肉好きが喜ぶ。匂いで魔物をおびき寄せることがある。', tags: ['主力食料'] },
+      { id: 'fish', name: '干し魚', emoji: '🐟', size: 2, weight: 3, danger: 1, food: 7, morale: 1, note: '軽めで扱いやすい。匂いで魔物をおびき寄せることがある。', tags: ['さっぱり'] },
+      { id: 'fruit', name: 'ドライフルーツ', emoji: '🍇', size: 1, weight: 1, danger: 0, food: 4, morale: 2, note: '軽い。少しだけ元気が出る。', tags: ['軽量'] },
+      { id: 'cookie', name: 'クッキー', emoji: '🍪', size: 1, weight: 1, danger: 0, food: 3, morale: 5, note: '甘くておいしい3時のおやつ。', tags: ['士気UP'] },
+      { id: 'potion', name: 'ポーション', emoji: '🧪', size: 2, weight: 1, danger: 2, food: 6, morale: -1, note: '栄養はあるが少し危険でマズい。気分が下がる。', tags: ['高栄養'] },
+      { id: 'herb', name: '薬草', emoji: '🌿', size: 1, weight: 1, danger: 3, food: 7, morale: -4, note: '超小型だが危険度が高く超まずい。', tags: ['高栄養'] },
+      { id: 'bread', name: 'パン', emoji: '🍞', size: 3, weight: 1, danger: 0, food: 6, morale: 2, note: 'かさむけど軽い、我らの炭水化物。ジャムと相性が良い。', tags: ['安定'] },
+      { id: 'jam', name: 'ジャム', emoji: '🫙', size: 1, weight: 4, danger: 0, food: 2, morale: 6, note: '小さいのに重い。パンと一緒に食べるとさらに気分が上がる。', tags: ['ごほうび'] },
+      { id: 'lantern', name: 'ランタン', emoji: '🪔', size: 2, weight: 1, danger: -2, food: 0, morale: 1, note: '周囲を明るく照らし、危険度を下げる。', tags: ['安全'] },
+      { id: 'blanket', name: 'ふわふわの毛布', emoji: '🛌', size: 3, weight: 1, danger: 0, food: 0, morale: 4, note: 'かさばるが、温かくて安心感がある。', tags: ['士気UP'] },
+      { id: 'mystery', name: 'よっちの謎袋', emoji: '🕳️', size: 2, weight: 2, danger: 0, food: 0, morale: 0, note: '旅に出る時に中身が確定する。', tags: ['カオス'] }
+    ];
+
+    const companions = {
+      ou: {
+        name: '壱ノ護王',
+        emoji: '👑',
+        description: 'サイズも重量も多めに持てる。食料消費は少し多めで、危険への耐性は高め。',
+        capBonus: 3,
+        weightBonus: 3,
+        foodNeedMult: 1.15,
+        dangerTolMult: 1.12,
+        moraleWeight: 0.8,
+        lines: {
+          high: '壱ノ護王「素晴らしい取捨選択です」',
+          like: '壱ノ護王「ドライフルーツ、入れてくださったんですね」',
+          default: '壱ノ護王「これから学んでいきましょう」'
+        }
+      },
+      machi: {
+        name: 'マッヒー',
+        emoji: '🔥',
+        description: 'かさむのは嫌だけど、重いものも持てる。大食いで危険には強い。',
+        capBonus: -1,
+        weightBonus: 3,
+        foodNeedMult: 1.55,
+        dangerTolMult: 1.3,
+        moraleWeight: 1.5,
+        lines: {
+          high: 'マッヒー「お前やるじゃねぇか！」',
+          like: 'マッヒー「肉！肉があればいいってもんよ！」',
+          dangerOver: 'マッヒー「危ねーのもいいがちょっとは考えろよ？」',
+          foodShort: 'マッヒー「腹減った…」',
+          lowMorale: 'マッヒー「何とか終えたけど、つまんねー旅だったぜ」',
+          default: 'マッヒー「悪くねぇ旅ではあったな」'
+        }
+      },
+      fubuki: {
+        name: 'フブキ',
+        emoji: '❄',
+        description: 'ミニマリスト。小食で危険は嫌い。',
+        capBonus: -5,
+        weightBonus: -4,
+        foodNeedMult: 0.8,
+        dangerTolMult: 0.86,
+        moraleWeight: 0.5,
+        lines: {
+          high: 'フブキ「やるじゃない、良い旅だったわ」',
+          like: 'フブキ「魚、好きなのよね」',
+          dangerOver: 'フブキ「危ない旅は嫌ね」',
+          default: 'フブキ「疲れたわ、早く休みたい…」'
+        }
+      },
+      yocchi: {
+        name: 'よっち',
+        emoji: '🌒',
+        description: '荷物はデカくてもいいけど重いのは面倒。危険が少ないとつまらなさそう。',
+        capBonus: 2,
+        weightBonus: -2,
+        foodNeedMult: 0.95,
+        dangerTolMult: 1.2,
+        moraleWeight: 1.5,
+        lines: {
+          high: 'よっち「さすがだねぇ、楽しかったですよ～」',
+          dangerOkay: 'よっち「旅は危ないくらいが面白いですからね！」',
+          foodShort: 'よっち「よっちお腹空いた～…」',
+          lowMorale: 'よっち「もっと面白いことしたいな〜」',
+          default: 'よっち「もう少し刺激ある旅がしたいなぁ」'
+        }
+      },
+      nia: {
+        name: 'にゃありい',
+        emoji: '🐱',
+        description: '荷物は多少かさんでもいいけど重いと動きにくいらしい。クッキーがないと急に元気をなくす。',
+        capBonus: 1,
+        weightBonus: -1,
+        foodNeedMult: 1.0,
+        dangerTolMult: 0.9,
+        moraleWeight: 1.5,
+        lines: {
+          high: 'にゃありい「すっごく楽しかったにゃ！」',
+          dangerOver: 'にゃありい「ワクワクは好きだけど怖いのは嫌にゃ～～泣」',
+          like: 'にゃありい「クッキーにゃ！！クッキー大好きにゃ！」',
+          lowMorale: 'にゃありい「次はもっとワクワクする旅にしたいにゃ」',
+          default: 'にゃありい「にゃあは疲れたにゃ…」'
+        }
+      }
+    };
+
+    const regions = [
+      { id: 'plains', name: '草原', flavor: 'ノーマル', note: 'すごしやすく標準的な旅。', capBonus: 0, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '草原は基本に忠実。落ち着いて荷物を組もう。' },
+      { id: 'snowfield', name: '雪原', flavor: '食料消費大', note: '寒さで消耗しやすい。', capBonus: 0, weightBonus: 0, foodNeed: 26, dangerLimit: 8, banner: '雪の道は腹が減る。食料を多めに持っていこう。' },
+      { id: 'mountain', name: '山岳', flavor: '重量制限厳しい', note: '軽さが正義。', capBonus: 0, weightBonus: -4, foodNeed: 18, dangerLimit: 8, banner: '山岳地帯は重い荷物がそのまま罪になる。' },
+      { id: 'cave', name: '洞窟', flavor: 'サイズ制限厳しい', note: '大きい荷物は入らない。', capBonus: -4, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '洞窟は詰め込みすぎると通れない。かさばるものは置いていこう' },
+      { id: 'demon', name: '魔王領', flavor: 'サイズ制限緩・薬必須', note: '危険な場所。ポーションか薬草が必須。', capBonus: 2, weightBonus: 2, foodNeed: 18, dangerLimit: 4, banner: '魔物が出てくる可能性があり危険。しっかり準備していこう。' }
+    ];
+
+    const weather = [
+      { id: 'clear', name: '晴れ', note: '視界は良好', foodNeedMod: 0, dangerMod: 0, weightMod: 0, capMod: 0 },
+      { id: 'rain', name: '小雨', note: '少し荷が重く感じる', foodNeedMod: 0, dangerMod: 0, weightMod: -3, capMod: 0 },
+      { id: 'snow', name: '吹雪', note: '寒さで体力が削られる', foodNeedMod: 3, dangerMod: 0, weightMod: 0, capMod: 0 },
+      { id: 'wind', name: '強風', note: 'バランスを取るのが難しい', foodNeedMod: 0, dangerMod: 0, weightMod: 0, capMod: -3 },
+      { id: 'fog', name: '濃霧', note: '見通しが悪い', foodNeedMod: 0, dangerMod: -3, weightMod: 0, capMod: 0 }
+    ];
+
+    const achievementsDef = [
+      { id: 'first_play', name: '荷造り初心者', desc: 'はじめて旅に出た(スコア問わず)', check: c => c.stats && c.stats.firstPlay },
+      { id: 'ou_s', name: '壱ノ護王の理解者', desc: '壱ノ護王を同行者にしてSランクを達成する', check: c => c.cId === 'ou' && c.rank === 'S' },
+      { id: 'machi_s', name: 'マッヒーの理解者', desc: 'マッヒーを同行者にしてSランクを達成する', check: c => c.cId === 'machi' && c.rank === 'S' },
+      { id: 'fubuki_s', name: 'フブキの理解者', desc: 'フブキを同行者にしてSランクを達成する', check: c => c.cId === 'fubuki' && c.rank === 'S' },
+      { id: 'yocchi_s', name: 'よっちの理解者', desc: 'よっちを同行者にしてSランクを達成する', check: c => c.cId === 'yocchi' && c.rank === 'S' },
+      { id: 'nia_s', name: 'にゃありいの理解者', desc: 'にゃありいを同行者にしてSランクを達成する', check: c => c.cId === 'nia' && c.rank === 'S' },
+      { id: 'all_s', name: '古代勇者の理解者', desc: 'すべてのキャラクターでSランクを達成する', check: c => {
+          const s = c.stats.chars;
+          return s && s.ou?.s && s.machi?.s && s.fubuki?.s && s.yocchi?.s && s.nia?.s;
+      }},
+      { id: 'perf', name: '完璧主義', desc: 'スコア100点満点を達成する', check: c => c.score === 100 },
+      { id: 'all_100', name: '古代勇者専属パッカー', desc: 'すべてのキャラクターで100点満点を達成する', check: c => {
+          const s = c.stats.chars;
+          return s && s.ou?.s100 && s.machi?.s100 && s.fubuki?.s100 && s.yocchi?.s100 && s.nia?.s100;
+      }},
+      { id: 'hard_s', name: '過酷な世界の歩き方', desc: '難易度「むずかしい」でSランクを達成する', check: c => c.diff === 'hard' && c.rank === 'S' },
+      { id: 'hard_100', name: '冒険者の鑑', desc: '難易度「むずかしい」でスコア100点を達成する', check: c => c.diff === 'hard' && c.score === 100 },
+      { id: 'all_hard_100', name: '伝説のロジスティシャン', desc: 'すべてのキャラクターの難易度「むずかしい」で100点満点を達成する', check: c => {
+          const s = c.stats.hard100;
+          return s && s.ou && s.machi && s.fubuki && s.yocchi && s.nia;
+      }},
+      { id: 'mini', name: '生粋のミニマリスト', desc: 'アイテムの総数を3個以下にしてSランクを達成する', check: c => c.totalItems <= 3 && c.rank === 'S' },
+      { id: 'pack_master', name: '荷造りの達人', desc: 'サイズと重さの両方を、上限値ぴったりにしてSランクを達成する', check: c => c.t.size === c.r.capacity && c.t.weight === c.r.weightLimit && c.rank === 'S' },
+      { id: 'health', name: '健康志向', desc: 'ポーションと薬草を一つも使わずにSランクを達成する', check: c => !c.items.some(i => i.id === 'potion' || i.id === 'herb') && c.rank === 'S' },
+      { id: 'gamble', name: '至高のギャンブラー', desc: '「よっちの謎袋」を3つ以上入れて、Sランクを達成する', check: c => c.items.filter(i => i.id === 'mystery').length >= 3 && c.rank === 'S' },
+      { id: 'greedy', name: '欲張りさん', desc: '食料を全種類持ってSランクを達成する', check: c => {
+          const fTypes = ['meat', 'fish', 'fruit', 'cookie', 'potion', 'herb', 'bread', 'jam'];
+          return fTypes.every(fid => c.items.some(i => i.id === fid)) && c.rank === 'S';
+      }},
+      { id: 'sweets', name: 'スイーツパラダイス', desc: 'クッキー、ジャム、ドライフルーツのみで必要食料を満たしてSランクを達成する', check: c => {
+          const foodItems = c.items.filter(i => i.food > 0);
+          const isOnlySweets = foodItems.length > 0 && foodItems.every(i => ['cookie', 'jam', 'fruit'].includes(i.id));
+          return isOnlySweets && c.foodGap === 0 && c.rank === 'S';
+      }},
+      { id: 'meat', name: '肉の宴', desc: '干し肉を5個以上持ってSランクを達成する', check: c => c.items.filter(i => i.id === 'meat').length >= 5 && c.rank === 'S' },
+      { id: 'bread_jam', name: 'やっぱりパンにはジャム', desc: 'パンとジャムの両方を荷物に入れてSランクを達成する', check: c => c.items.some(i => i.id === 'bread') && c.items.some(i => i.id === 'jam') && c.rank === 'S' },
+      { id: 'safe', name: '絶対安全領域', desc: '合計の危険度をマイナスにしてSランクを達成する', check: c => c.t.danger < 0 && c.rank === 'S' },
+      { id: 'warm', name: 'ぬくもりの旅', desc: 'ふわふわの毛布を2つ以上持っていき、士気を20以上にしてSランクを達成する', check: c => c.items.filter(i => i.id === 'blanket').length >= 2 && c.t.morale >= 20 && c.rank === 'S' },
+      { id: 'diet', name: '孤高の偏食家', desc: '偏食ペナルティを受けながらもSランクを達成する', check: c => c.dietPenalty && c.rank === 'S' },
+      { id: 'edge', name: 'ギリギリの生還', desc: 'スコアがぴったり60点でクリアする', check: c => c.score === 60 },
+      { id: 'danger', name: '旅は危険と隣り合わせ', desc: '危険度を超過しながらもSランクを達成する', check: c => c.overDanger > 0 && c.rank === 'S' },
+      { id: 'eat_over', name: '暴食の王', desc: '食料を45以上にしてSランクを達成する', check: c => c.t.food >= 45 && c.rank === 'S' },
+      { id: 'eat_less', name: '小食の王', desc: '食料を15以下にしてSランクを達成する', check: c => c.t.food <= 15 && c.rank === 'S' }
+    ];
+
+    const selected = new Map();
+    const mysteryRolls = [];
+
+    let setupDone = false;
+    let isJourneyFinished = false;
+    let currentJourney = null;
+    let currentCompanion = null;
+    let modalStage = null;
+    let pendingJourney = null;
+    let pendingCompanion = null;
+    let lastResultText = "";
+
+    const els = {
+      overlay: document.getElementById('overlay'),
+      modal: document.getElementById('modal'),
+      subOverlay: document.getElementById('subOverlay'),
+      subModal: document.getElementById('subModal'),
+      updateInfoBtn: document.getElementById('updateInfoBtn'),
+      achievementsBtn: document.getElementById('achievementsBtn'),
+      items: document.getElementById('items'),
+      selectedList: document.getElementById('selectedList'),
+      resultTitle: document.getElementById('resultTitle'),
+      scoreBox: document.getElementById('scoreBox'),
+      scoreValue: document.getElementById('scoreValue'),
+      scoreCircle: document.getElementById('scoreCircle'),
+      dialogue: document.getElementById('dialogue'),
+      breakdown: document.getElementById('breakdown'),
+      journeyText: document.getElementById('journeyText'),
+      journeyDiffText: document.getElementById('journeyDiffText'),
+      companionText: document.getElementById('companionText'),
+      ruleText: document.getElementById('ruleText'),
+      setupSection: document.getElementById('setupSection'),
+      packingSection: document.getElementById('packingSection'),
+      difficulty: document.getElementById('difficulty'),
+      setupBtn: document.getElementById('setupBtn'),
+      setoffBtn: document.getElementById('setoffBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      restartBtn: document.getElementById('restartBtn'),
+      shareBtn: document.getElementById('shareBtn')
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('tutorialDone')) {
+        showTutorial();
+      }
+    });
+
+    function showTutorial() {
+      els.subModal.innerHTML = `
+        <div class="modal-content-wrap">
+          <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+            <div class="journey-badge">ようこそ</div>
+            <h3>初めての旅立ちへ</h3>
+            <p class="modal-text">
+              このゲームは、与えられた環境に合わせて最適な荷物を組み合わせ、同行者を満足させるパズルゲームです。
+            </p>
+            <ul class="update-list">
+              <li>1. 難易度を選び、行き先と天候の条件を確認します。</li>
+              <li>2. 条件に合いそうな同行者を選びます。</li>
+              <li>3. サイズ・重さ・食料・危険度・士気のバランスを考えながら荷物を詰めます。</li>
+              <li>4. 旅に出発し、結果（スコア）を確認します。</li>
+            </ul>
+            <p class="modal-text">
+              同行者の好物や、アイテム同士の組み合わせ（シナジー）を見つけることが高得点の鍵となります。それでは、良い旅を！
+            </p>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-primary" id="closeTutorialBtn">準備を始める</button>
+          </div>
+        </div>
+      `;
+      els.subOverlay.classList.remove('hidden');
+      document.getElementById('closeTutorialBtn').addEventListener('click', () => {
+        localStorage.setItem('tutorialDone', 'true');
+        els.subOverlay.classList.add('hidden');
+      });
+    }
+
+    function randomChoice(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function getDifficultyMod() {
+      const v = els.difficulty.value;
+      if (v === 'easy') return { cap: 4, weight: 4, penaltyMult: 0.5, likeBonus: 15, synergyBonus: 8, scoreMult: 1.0, label: 'かんたん' };
+      if (v === 'hard') return { cap: -2, weight: -2, penaltyMult: 1.5, likeBonus: 8, synergyBonus: 2, scoreMult: 1.0, label: 'むずかしい' };
+      return { cap: 0, weight: 0, penaltyMult: 1.0, likeBonus: 12, synergyBonus: 5, scoreMult: 1.0, label: 'ふつう' };
+    }
+
+    function generateJourney() {
+      const region = randomChoice(regions);
+      const w = randomChoice(weather);
+      return { ...region, weather: w };
+    }
+
+    function syncMysteryRolls() {
+      const qty = selected.get('mystery') || 0;
+      while (mysteryRolls.length < qty) {
+        const rng = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        mysteryRolls.push({
+          size: rng(0, 5),
+          weight: rng(0, 5),
+          danger: rng(0, 8),
+          food: rng(0, 10),
+          morale: rng(-2, 10),
+          mysteryRolled: true
+        });
+      }
+      while (mysteryRolls.length > qty) mysteryRolls.pop();
+    }
+
+    function setItemQty(id, nextQty) {
+      const clamped = Math.max(0, Math.min(10, nextQty));
+      if (clamped === 0) selected.delete(id);
+      else selected.set(id, clamped);
+      if (id === 'mystery') syncMysteryRolls();
+    }
+
+    function getCurrentRules() {
+      const d = getDifficultyMod();
+      const j = currentJourney || pendingJourney || regions[0];
+      const c = currentCompanion ? companions[currentCompanion] : null;
+      const weatherData = j.weather || weather[0];
+
+      const capacity = Math.max(6, 18 + j.capBonus + d.cap + (c ? c.capBonus : 0) + (weatherData.capMod || 0));
+      const weightLimit = Math.max(6, 18 + j.weightBonus + d.weight + (c ? c.weightBonus : 0) + (weatherData.weightMod || 0));
+      const foodNeed = Math.max(6, Math.round((j.foodNeed + weatherData.foodNeedMod) * (c ? c.foodNeedMult : 1)));
+      const dangerLimit = Math.max(3, Math.round((j.dangerLimit + weatherData.dangerMod) * (c ? c.dangerTolMult : 1)));
+
+      return { difficulty: d, journey: j, weather: weatherData, companion: c, capacity, weightLimit, foodNeed, dangerLimit };
+    }
+
+    function checkDietPenalty(selectedItems, totalFood) {
+      if (totalFood === 0) return null;
+      let drugFoodTotal = 0;
+      const foodCount = {};
+      
+      for (const item of selectedItems) {
+        if (item.food > 0) {
+          foodCount[item.id] = (foodCount[item.id] || 0) + item.food;
+          if (item.id === 'potion' || item.id === 'herb') {
+            drugFoodTotal += item.food;
+          }
+        }
+      }
+
+      if (drugFoodTotal / totalFood >= 0.70) return { type: 'drug' };
+
+      for (const [id, foodScore] of Object.entries(foodCount)) {
+        if (id !== 'potion' && id !== 'herb') {
+          if (foodScore / totalFood >= 0.80) return { type: 'normal' };
+        }
+      }
+      return null;
+    }
+
+    function getSelectedItems() {
+      const out = [];
+      for (const [id, qty] of selected.entries()) {
+        const base = items.find(item => item.id === id);
+        if (!base || qty <= 0) continue;
+        for (let i = 0; i < qty; i++) {
+          if (id === 'mystery') out.push({ ...base, ...mysteryRolls[i], mysteryHidden: true });
+          else out.push({ ...base });
+        }
+      }
+      return out;
+    }
+
+    function getBaseItems() {
+      const out = [];
+      for (const [id, qty] of selected.entries()) {
+        const base = items.find(item => item.id === id);
+        if (!base || qty <= 0) continue;
+        for (let i = 0; i < qty; i++) {
+          out.push({ ...base });
+        }
+      }
+      return out;
+    }
+
+    function calcTotals(list) {
+      return list.reduce((acc, item) => {
+        acc.size += item.size;
+        acc.weight += item.weight;
+        acc.danger += item.danger;
+        acc.food += item.food;
+        acc.morale += item.morale;
+        return acc;
+      }, { size: 0, weight: 0, danger: 0, food: 0, morale: 0 });
+    }
+
+    function renderItems() {
+      els.items.innerHTML = '';
+      items.forEach(item => {
+        const current = selected.get(item.id) || 0;
+        const el = document.createElement('div');
+        const isDisabled = !setupDone || isJourneyFinished;
+        el.className = 'item' + (isDisabled ? ' disabled' : '');
+
+        const statLine = item.id === 'mystery'
+          ? 'サイズ ???｜重さ ???｜危険度 ???｜食料 ???｜士気 ???'
+          : `サイズ ${item.size}｜重さ ${item.weight}｜危険度 ${item.danger}｜食料 ${item.food}｜士気 ${item.morale}`;
+
+        el.innerHTML = `
+          <div class="item-main">
+            <div class="item-title">${item.emoji} ${item.name}</div>
+            <div class="item-stats">${statLine}</div>
+            <div class="item-stats">${item.note}</div>
+          </div>
+          <div class="quantity">
+            <button type="button" class="minus" ${isDisabled ? 'disabled' : ''}>−</button>
+            <div class="qty-value">${current}</div>
+            <button type="button" class="plus" ${isDisabled ? 'disabled' : ''}>+</button>
+          </div>
+        `;
+
+        el.querySelector('.minus').addEventListener('click', () => {
+          if (!setupDone || isJourneyFinished) return;
+          setItemQty(item.id, (selected.get(item.id) || 0) - 1);
+          renderItems();
+          updatePreview();
+        });
+
+        el.querySelector('.plus').addEventListener('click', () => {
+          if (!setupDone || isJourneyFinished) return;
+          setItemQty(item.id, (selected.get(item.id) || 0) + 1);
+          renderItems();
+          updatePreview();
+        });
+
+        els.items.appendChild(el);
+      });
+    }
+
+    function renderSelectedList() {
+      const entries = [...selected.entries()].filter(([, qty]) => qty > 0);
+      if (!entries.length) {
+        els.selectedList.innerHTML = '<div class="empty">まだ空っぽ。何も持たずに行くのはちょっと無茶。</div>';
+        return;
+      }
+
+      els.selectedList.innerHTML = entries.map(([id, qty]) => {
+        const item = items.find(it => it.id === id);
+        return `<div class="selected-item"><span>${item.emoji} ${item.name} ×${qty}${id === 'mystery' && !isJourneyFinished ? '（中身は旅に出る時に判明）' : ''}</span><small>${item.tags[0] || ''}</small></div>`;
+      }).join('');
+    }
+
+    function renderJourneySummary() {
+      if (!setupDone || !currentJourney || !currentCompanion) return;
+      const rules = getCurrentRules();
+      els.journeyDiffText.textContent = rules.difficulty.label;
+      els.journeyText.textContent = `${currentJourney.name} × ${currentJourney.weather.name}（${currentJourney.weather.note}）。${currentJourney.banner}`;
+      els.companionText.textContent = `${rules.companion.name}：${rules.companion.description}`;
+      els.ruleText.textContent = `サイズ上限 ${rules.capacity}｜重さ上限 ${rules.weightLimit}｜必要食料 ${rules.foodNeed}｜危険上限 ${rules.dangerLimit}`;
+    }
+
+    function updatePreview() {
+      if (!setupDone || !currentJourney || !currentCompanion) return;
+      if (isJourneyFinished) return;
+
+      const rules = getCurrentRules();
+      const baseItems = getBaseItems();
+      const totalsDisplay = calcTotals(baseItems);
+      const hasMystery = (selected.get('mystery') || 0) > 0;
+      
+      const overSize = Math.max(0, totalsDisplay.size - rules.capacity);
+      const overWeight = Math.max(0, totalsDisplay.weight - rules.weightLimit);
+      const foodGap = Math.max(0, rules.foodNeed - totalsDisplay.food);
+      const overDanger = Math.max(0, totalsDisplay.danger - rules.dangerLimit);
+
+      const dietPenalty = checkDietPenalty(baseItems, totalsDisplay.food);
+      
+      let demonPenalty = false;
+      if (currentJourney.id === 'demon') {
+        if (!baseItems.some(i => i.id === 'potion' || i.id === 'herb')) demonPenalty = true;
+      }
+
+      const q = hasMystery ? ' <span style="color:var(--gold);">+ ?</span>' : '';
+      const statusSize = hasMystery ? '（?）' : (overSize ? `（超過 ${overSize}）` : '（OK）');
+      const statusWeight = hasMystery ? '（?）' : (overWeight ? `（超過 ${overWeight}）` : '（OK）');
+      const statusFood = hasMystery ? '（?）' : (foodGap ? `（不足 ${foodGap}）` : '（OK）');
+      const statusDanger = hasMystery ? '（?）' : (overDanger ? `（超過 ${overDanger}）` : '（OK）');
+      const statusMorale = hasMystery ? '（?）' : '（評価時に補正が入る）';
+      const statusDiet = dietPenalty ? `<div>食事バランス <span class="warn">偏りすぎ</span>（評価時に減点）</div>` : '';
+      const statusDemon = demonPenalty ? `<div>魔王領ペナルティ <span class="warn">薬がなく瘴気にやられる</span>（評価時に大幅減点）</div>` : '';
+
+      els.breakdown.innerHTML = [
+        `<div>サイズ <span class="highlight">${totalsDisplay.size}</span>${q} / ${rules.capacity} ${statusSize}</div>`,
+        `<div>重さ <span class="highlight">${totalsDisplay.weight}</span>${q} / ${rules.weightLimit} ${statusWeight}</div>`,
+        `<div>食料 <span class="highlight">${totalsDisplay.food}</span>${q} / ${rules.foodNeed} ${statusFood}</div>`,
+        `<div>危険度 <span class="highlight">${totalsDisplay.danger}</span>${q} / ${rules.dangerLimit} ${statusDanger}</div>`,
+        `<div>士気 <span class="highlight">${totalsDisplay.morale}</span>${q} ${statusMorale}</div>`,
+        statusDiet,
+        statusDemon
+      ].join('');
+
+      renderSelectedList();
+      renderJourneySummary();
+    }
+
+    function buildMoodContext(companionId, rules, selectedItems, totals) {
+      const countById = (id) => selectedItems.filter(i => i.id === id).length;
+      const foodGap = Math.max(0, rules.foodNeed - totals.food);
+      const dangerGap = rules.dangerLimit - totals.danger;
+      const dangerOver = totals.danger > rules.dangerLimit;
+      const dangerTooLow = dangerGap >= 3;
+      const dangerJustRight = Math.abs(totals.danger - rules.dangerLimit) <= 1;
+      const meatCount = countById('meat');
+      const potionCount = countById('potion');
+      const hasCookie = countById('cookie') > 0;
+      const hasFruit = countById('fruit') > 0;
+      const hasFish = countById('fish') > 0;
+      const hasMeat = meatCount > 0;
+      const hasMystery = countById('mystery') > 0;
+      const tooManyPotions = potionCount >= Math.max(2, Math.ceil(selectedItems.length / 2));
+      const hasBread = countById('bread') > 0;
+      const hasJam = countById('jam') > 0;
+
+      return { foodGap, dangerGap, dangerOver, dangerTooLow, dangerJustRight, meatCount, potionCount, hasCookie, hasFruit, hasFish, hasMeat, hasMystery, tooManyPotions, hasBread, hasJam };
+    }
+
+    function computeMorale(rules, totals, ctx) {
+      let morale = totals.morale;
+      const id = currentCompanion;
+      
+      if (ctx.hasBread && ctx.hasJam) morale += 5;
+
+      if (id === 'machi') {
+        if (ctx.dangerTooLow) morale -= 4;
+        if (ctx.foodGap > 0) morale -= Math.min(6, ctx.foodGap);
+        if (ctx.tooManyPotions) morale -= 4;
+        if (ctx.meatCount <= 1) morale -= 4;
+        if (ctx.meatCount >= 3) morale += 2;
+      }
+
+      if (id === 'fubuki') {
+        if (ctx.dangerOver) morale -= 3;
+        if (ctx.foodGap === 0) morale += 1;
+        if (ctx.hasFish) morale += 1;
+      }
+
+      if (id === 'yocchi') {
+        if (ctx.dangerTooLow) morale -= 4;
+        if (ctx.dangerJustRight) morale += 3;
+        if (ctx.foodGap > 0) morale -= 1;
+      }
+
+      if (id === 'nia') {
+        if (ctx.foodGap >= 4) morale -= 6;
+        if (!ctx.hasCookie) morale -= 20; 
+        if (ctx.hasCookie) morale += 4;
+        if (ctx.foodGap === 0) morale += 2;
+      }
+
+      if (id === 'ou') {
+        if (ctx.foodGap === 0) morale += 1;
+        if (ctx.hasFruit) morale += 1;
+      }
+
+      return morale;
+    }
+
+    function pickDialogue(score, rules, selectedItems, totals, morale, ctx) {
+      const c = rules.companion;
+      const id = currentCompanion;
+      const lowMoraleThreshold = { machi: 3, yocchi: 2, nia: 4 }[id] ?? -999;
+
+      let main = '';
+      if (score >= 80 && c.lines.high) main = c.lines.high;
+      else if (id === 'ou' && ctx.hasFruit) main = c.lines.like;
+      else if (id === 'machi' && ctx.hasMeat) main = c.lines.like;
+      else if (id === 'machi' && ctx.dangerOver) main = c.lines.dangerOver;
+      else if (id === 'machi' && ctx.foodGap > 0) main = c.lines.foodShort;
+      else if (id === 'fubuki' && ctx.hasFish) main = c.lines.like;
+      else if (id === 'fubuki' && ctx.dangerOver) main = c.lines.dangerOver;
+      else if (id === 'yocchi' && ctx.dangerJustRight) main = c.lines.dangerOkay;
+      else if (id === 'yocchi' && ctx.foodGap > 0) main = c.lines.foodShort;
+      else if (id === 'nia' && ctx.dangerOver) main = c.lines.dangerOver;
+      else if (id === 'nia' && ctx.hasCookie) main = c.lines.like;
+      else main = c.lines.default;
+
+      if (id === 'machi' && ctx.hasMystery && score < 80) {
+        main += '\nマッヒー「謎袋は、まあ……結果がすべてだな」';
+      }
+
+      if ((id === 'machi' || id === 'yocchi' || id === 'nia') && morale <= lowMoraleThreshold) {
+        main += `\n${c.lines.lowMorale}`;
+      }
+
+      return main;
+    }
+
+    function showAchievementToast(name) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span style="font-size: 1.2rem; vertical-align: middle;">🏆</span> <span>実績解除：${name}</span>`;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 5000);
+    }
+    
+    function showCopyToast(message) {
+      const container = document.getElementById('copy-toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'copy-toast';
+      toast.textContent = message;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    function checkAchievements(ctx) {
+      let unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+      let newlyUnlocked = [];
+
+      achievementsDef.forEach(ach => {
+        if (!unlocked.includes(ach.id) && ach.check(ctx)) {
+          unlocked.push(ach.id);
+          newlyUnlocked.push(ach);
+        }
+      });
+
+      if (newlyUnlocked.length > 0) {
+        localStorage.setItem('achievements', JSON.stringify(unlocked));
+        let delay = 0;
+        newlyUnlocked.forEach(ach => {
+          setTimeout(() => showAchievementToast(ach.name), delay);
+          delay += 600;
+        });
+      }
+    }
+
+    function showEvaluationResult() {
+      isJourneyFinished = true;
+      const rules = getCurrentRules();
+      const selectedItems = getSelectedItems();
+      const totals = calcTotals(selectedItems);
+      const ctx = buildMoodContext(currentCompanion, rules, selectedItems, totals);
+      const morale = computeMorale(rules, totals, ctx);
+      const d = getDifficultyMod();
+
+      const overSize = Math.max(0, totals.size - rules.capacity);
+      const overWeight = Math.max(0, totals.weight - rules.weightLimit);
+      const foodGap = Math.max(0, rules.foodNeed - totals.food);
+      const overDanger = Math.max(0, Math.floor(totals.danger) - rules.dangerLimit);
+
+      const dietPenalty = checkDietPenalty(selectedItems, totals.food);
+      let demonPenalty = false;
+      if (currentJourney.id === 'demon') {
+        if (!selectedItems.some(i => i.id === 'potion' || i.id === 'herb')) demonPenalty = true;
+      }
+
+      let score = 85;
+      
+      let p_size = (overSize * 8) + Math.pow(overSize, 2) * 2;
+      let p_weight = (overWeight * 8) + Math.pow(overWeight, 2) * 2;
+      let p_food = (foodGap * 10) + Math.pow(foodGap, 2) * 3;
+      let p_danger = (overDanger * 10) + Math.pow(overDanger, 2) * 4;
+
+      score -= Math.round((p_size + p_weight + p_food + p_danger) * d.penaltyMult);
+
+      if (dietPenalty) score -= Math.round(30 * d.penaltyMult);
+      if (demonPenalty) score -= Math.round(20 * d.penaltyMult);
+
+      const sizeSlack = Math.max(0, rules.capacity - totals.size);
+      const weightSlack = Math.max(0, rules.weightLimit - totals.weight);
+      const foodSurplus = Math.max(0, totals.food - rules.foodNeed);
+      score += Math.min(3, Math.floor(sizeSlack / 6));
+      score += Math.min(2, Math.floor(weightSlack / 6));
+      score += Math.min(4, Math.floor(Math.min(foodSurplus, 12) / 4));
+      
+      if (ctx.hasBread && ctx.hasJam) {
+        score += d.synergyBonus;
+      }
+
+      let hasLike = false;
+      if (currentCompanion === 'ou' && ctx.hasFruit) hasLike = true;
+      if (currentCompanion === 'machi' && ctx.hasMeat) hasLike = true;
+      if (currentCompanion === 'fubuki' && ctx.hasFish) hasLike = true;
+      if (currentCompanion === 'yocchi' && ctx.hasMystery) hasLike = true;
+      if (currentCompanion === 'nia' && ctx.hasCookie) hasLike = true;
+
+      if (hasLike) {
+        score += d.likeBonus;
+      }
+
+      let moraleScore = morale * (rules.companion.moraleWeight || 0);
+      if (moraleScore > 25) moraleScore = 25;
+      score += moraleScore;
+
+      if (selectedItems.some(i => i.id === 'mystery')) {
+        const chaos = Math.floor(Math.random() * 21) - 8;
+        score += chaos;
+      }
+
+      score *= d.scoreMult;
+      score = Math.max(0, Math.min(100, Math.round(score)));
+
+      const rank = score >= 90 ? 'S' : score >= 75 ? 'A' : score >= 60 ? 'B' : score >= 40 ? 'C' : 'D';
+      const moraleText = morale >= 10 ? '高い' : morale <= 3 ? '低い' : '普通';
+      let dialogue = pickDialogue(score, rules, selectedItems, totals, morale, ctx);
+      
+      if (dietPenalty) dialogue += '\n（さすがに食事が偏りすぎている…）';
+      if (demonPenalty) dialogue += '\n（魔王領なのに薬がなく、瘴気にやられてしまった…）';
+
+      const statusDietModal = dietPenalty ? `<div>食事バランス <span class="warn">偏食ペナルティあり</span>（大減点）</div>` : '';
+      const statusDemonModal = demonPenalty ? `<div>魔王領ペナルティ <span class="warn">薬がなく瘴気にやられた</span>（大減点）</div>` : '';
+
+      let playStats = JSON.parse(localStorage.getItem('playStats') || '{}');
+      if(!playStats.chars) playStats.chars = {};
+      if(!playStats.hard100) playStats.hard100 = {};
+      
+      if (!playStats.chars[currentCompanion]) playStats.chars[currentCompanion] = { s: false, s100: false };
+      if (rank === 'S') playStats.chars[currentCompanion].s = true;
+      if (score === 100) playStats.chars[currentCompanion].s100 = true;
+      if (score === 100 && d.label === 'むずかしい') playStats.hard100[currentCompanion] = true;
+      playStats.firstPlay = true;
+      localStorage.setItem('playStats', JSON.stringify(playStats));
+
+      const evalCtx = {
+        score: score,
+        rank: rank,
+        cId: currentCompanion,
+        jId: currentJourney.id,
+        wId: currentJourney.weather.id,
+        diff: els.difficulty.value,
+        r: rules,
+        t: totals,
+        items: selectedItems,
+        totalItems: selectedItems.length,
+        dietPenalty: dietPenalty !== null,
+        foodGap: foodGap,
+        overDanger: overDanger,
+        stats: playStats
+      };
+      checkAchievements(evalCtx);
+
+      const itemListText = selectedItems.map(i => i.name).reduce((acc, curr) => {
+        acc[curr] = (acc[curr] || 0) + 1;
+        return acc;
+      }, {});
+      const itemsString = Object.entries(itemListText).map(([name, qty]) => `${name}×${qty}`).join(', ');
+
+      lastResultText = `古代勇者の旅支度\n難易度: ${d.label}\n場所: ${currentJourney.name} × ${currentJourney.weather.name}\n同行者: ${companions[currentCompanion].name}\nスコア: ${score}点 (${rank})\n\n【持ち物】\n${itemsString}\n\nサイズ: ${totals.size}/${rules.capacity}\n重さ: ${totals.weight}/${rules.weightLimit}\n食料: ${totals.food}/${rules.foodNeed}\n危険度: ${totals.danger}/${rules.dangerLimit}\n士気: ${morale}`;
+
+      els.modal.innerHTML = `
+        <div class="modal-content-wrap">
+          <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+            <div class="journey-badge">冒険結果</div>
+            <h3>旅を終えました</h3>
+            
+            <div class="score-box" style="margin-bottom: 20px;">
+              <div class="score-circle" style="background: conic-gradient(var(--gold) ${score * 3.6}deg, rgba(255,255,255,0.04) 0deg);">
+                <div class="score-inner">
+                  <div>
+                    <div class="score-value">${score}</div>
+                    <div class="score-label">満足度</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="dialogue" style="margin-bottom: 8px;">${dialogue}</div>
+                <div style="font-size: 0.95rem; color: var(--muted);">評価 ${rank}｜${score}点<br>士気 ${morale}（${moraleText}）</div>
+              </div>
+            </div>
+
+            <div class="breakdown">
+              <div>サイズ <span class="highlight">${totals.size}</span> / ${rules.capacity} ${overSize ? `（超過 ${overSize}）` : '（OK）'}</div>
+              <div>重さ <span class="highlight">${totals.weight}</span> / ${rules.weightLimit} ${overWeight ? `（超過 ${overWeight}）` : '（OK）'}</div>
+              <div>食料 <span class="highlight">${totals.food}</span> / ${rules.foodNeed} ${foodGap ? `（不足 ${foodGap}）` : '（OK）'}</div>
+              <div>危険度 <span class="highlight">${totals.danger}</span> / ${rules.dangerLimit} ${overDanger ? `（超過 ${overDanger}）` : '（OK）'}</div>
+              ${statusDietModal}
+              ${statusDemonModal}
+            </div>
+          </div>
+          
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-primary" id="closeEvalBtn">拠点に戻る</button>
+          </div>
+        </div>
+      `;
+
+      els.resultTitle.textContent = "冒険の結果";
+      els.scoreBox.style.display = "grid";
+      els.scoreValue.textContent = score;
+      els.scoreCircle.style.background = `conic-gradient(var(--gold) ${score * 3.6}deg, rgba(255,255,255,0.04) 0deg)`;
+      els.dialogue.textContent = `${dialogue}\n\n評価 ${rank}｜${score}点\n士気 ${morale}（${moraleText}）`;
+
+      els.breakdown.innerHTML = [
+        `<div>サイズ <span class="highlight">${totals.size}</span> / ${rules.capacity} ${overSize ? `（超過 ${overSize}）` : '（OK）'}</div>`,
+        `<div>重さ <span class="highlight">${totals.weight}</span> / ${rules.weightLimit} ${overWeight ? `（超過 ${overWeight}）` : '（OK）'}</div>`,
+        `<div>食料 <span class="highlight">${totals.food}</span> / ${rules.foodNeed} ${foodGap ? `（不足 ${foodGap}）` : '（OK）'}</div>`,
+        `<div>危険度 <span class="highlight">${totals.danger}</span> / ${rules.dangerLimit} ${overDanger ? `（超過 ${overDanger}）` : '（OK）'}</div>`,
+        `<div>士気 <span class="highlight">${morale}</span>（${moraleText}）</div>`,
+        statusDietModal,
+        statusDemonModal
+      ].join('');
+
+      els.setoffBtn.style.display = 'none';
+      els.resetBtn.style.display = 'none';
+      els.restartBtn.style.display = 'block';
+      els.shareBtn.style.display = 'block';
+      
+      renderItems();
+      renderSelectedList();
+
+      els.modal.querySelector('#closeEvalBtn').addEventListener('click', () => {
+        els.overlay.classList.add('hidden');
+        modalStage = null;
+      });
+    }
+
+    function openJourneyModal() {
+      pendingJourney = generateJourney();
+      pendingCompanion = null;
+      modalStage = 'journey';
+      els.overlay.classList.remove('hidden');
+      
+      const j = pendingJourney;
+      els.modal.innerHTML = `
+        <div class="modal-content-wrap">
+          <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+            <div class="modal-journey">
+              <div class="journey-badge">今回の旅</div>
+              <h3>条件を読んで旅支度しろ！</h3>
+              <div class="hero-line">${j.name} × ${j.weather.name}</div>
+              <p class="modal-text">${j.banner}</p>
+              <div class="hero-line">今回の旅の雰囲気をつかんだら、次へ進もう。</div>
+            </div>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-primary" id="nextToCompanion">同行するメンバーを選ぶ</button>
+          </div>
+        </div>
+      `;
+      els.modal.querySelector('#nextToCompanion').addEventListener('click', openCompanionModal);
+    }
+
+    function openCompanionModal() {
+      modalStage = 'companion';
+      els.modal.innerHTML = `
+        <div class="modal-content-wrap">
+          <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+            <div class="journey-badge">同行者を選ぶ</div>
+            <h3>同行するメンバーを選んでください</h3>
+            <p class="modal-text">人物をクリック/タップして選択。「荷物を詰める！」で確定するよ。迷ったら壱ノ護王が安定。</p>
+            <div class="companion-grid" id="companionGrid"></div>
+            <div class="modal-footer-note">同行者ごとに、サイズ・重量・食料・危険・士気の感じ方が変わるよ。</div>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-good" id="packBtn" disabled>荷物を詰める！</button>
+          </div>
+        </div>
+      `;
+
+      const grid = els.modal.querySelector('#companionGrid');
+      const packBtn = els.modal.querySelector('#packBtn');
+
+      Object.entries(companions).forEach(([id, c]) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'companion-card';
+        
+        if (pendingCompanion === id) {
+          card.classList.add('selected');
+          packBtn.disabled = false;
+        }
+
+        card.innerHTML = `
+          <div class="companion-head"><span class="companion-emoji">${c.emoji}</span>${c.name}</div>
+          <p class="companion-desc">${c.description}</p>
+        `;
+        
+        card.addEventListener('click', () => {
+          pendingCompanion = id;
+          grid.querySelectorAll('.companion-card').forEach(el => el.classList.remove('selected'));
+          card.classList.add('selected');
+          packBtn.disabled = false;
+        });
+        
+        grid.appendChild(card);
+      });
+
+      packBtn.addEventListener('click', finalizeSetup);
+    }
+
+    function finalizeSetup() {
+      currentJourney = pendingJourney;
+      currentCompanion = pendingCompanion;
+      setupDone = true;
+      isJourneyFinished = false;
+      selected.clear();
+      mysteryRolls.length = 0;
+      
+      els.setupSection.style.display = 'none';
+      els.packingSection.style.display = 'block';
+
+      els.resultTitle.textContent = "現在の状態";
+      els.scoreBox.style.display = "none";
+      els.setoffBtn.style.display = 'block';
+      els.resetBtn.style.display = 'block';
+      els.restartBtn.style.display = 'none';
+      els.shareBtn.style.display = 'none';
+
+      renderItems();
+      renderJourneySummary();
+      renderSelectedList();
+      updatePreview();
+      els.overlay.classList.add('hidden');
+      modalStage = null;
+      pendingJourney = null;
+      pendingCompanion = null;
+    }
+
+    els.updateInfoBtn.addEventListener('click', () => {
+      els.subModal.innerHTML = `
+        <div class="modal-content-wrap">
+          <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+            <div class="journey-badge">お知らせ</div>
+            <h3>更新情報</h3>
+            <ul class="update-list">
+              <li>2026/05/10：UIの改修とチュートリアルを追加しました。</li>
+              <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。また、100点を出しにくくする難易度・ペナルティ調整を行いました。</li>
+              <li>2026/05/08：様々な条件で獲得できる「実績解除（アチーブメント）」を追加しました。獲得した実績は「実績一覧」から確認できます。</li>
+              <li>2026/05/07：「古代勇者の旅支度」を試作しました。</li>
+              </ul>
+            <p class="modal-text">今後のアップデート予定<br>・タイムアタックモードの実装<br>・新たな同行者やアイテムの追加</p>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-secondary" id="closeUpdateBtn">閉じる</button>
+          </div>
+        </div>
+      `;
+      els.subOverlay.classList.remove('hidden');
+      document.getElementById('closeUpdateBtn').addEventListener('click', () => {
+        els.subOverlay.classList.add('hidden');
+      });
+    });
+    
+    els.achievementsBtn.addEventListener('click', () => {
+      renderAchievementModal();
+    });
+
+    function renderAchievementModal() {
+      const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+      
+      let html = `
+        <div class="modal-content-wrap">
+          <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
+            <div class="journey-badge">コレクション</div>
+            <h3>実績一覧</h3>
+            <p class="modal-text">達成した実績の確認ができます。スマホならタップ、PCならマウスを乗せて達成条件を見てみましょう。</p>
+            <div class="achieve-container" style="display: grid; gap: 10px; margin-bottom: 20px;">
+      `;
+      
+      achievementsDef.forEach(ach => {
+        const isUnlocked = unlocked.includes(ach.id);
+        const displayName = isUnlocked ? ach.name : '？？？';
+        const displayDesc = isUnlocked ? ach.desc : '未獲得のシークレット実績です。';
+        const icon = isUnlocked ? '🏆' : '🔒';
+        
+        html += `
+          <div class="achieve-item ${isUnlocked ? 'unlocked' : 'locked'}">
+            <span style="font-weight: 700;">${icon} ${displayName}</span>
+            <span style="font-size: 0.8rem; color: var(--muted);">${isUnlocked ? '達成済' : '未達成'}</span>
+            <div class="tooltip">${displayDesc}</div>
+          </div>
+        `;
+      });
+      
+      html += `
+            </div>
+            <div style="text-align: right;">
+              <button class="btn-secondary" style="font-size:0.8rem; padding: 6px 12px; width: auto;" id="resetAchieveBtn">実績データをリセット</button>
+            </div>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button type="button" class="btn-secondary" id="closeAchieveBtn">閉じる</button>
+          </div>
+        </div>
+      `;
+      
+      els.subModal.innerHTML = html;
+      els.subOverlay.classList.remove('hidden');
+      
+      document.getElementById('closeAchieveBtn').addEventListener('click', () => {
+        els.subOverlay.classList.add('hidden');
+      });
+
+      document.getElementById('resetAchieveBtn').addEventListener('click', () => {
+        if(confirm('本当に全ての実績データをリセットしますか？')) {
+          localStorage.removeItem('achievements');
+          localStorage.removeItem('playStats');
+          localStorage.removeItem('tutorialDone');
+          renderAchievementModal(); 
+        }
+      });
+    }
+
+    els.setupBtn.addEventListener('click', openJourneyModal);
+
+    els.setoffBtn.addEventListener('click', () => {
+      if (!setupDone || isJourneyFinished) return;
+      modalStage = 'evaluating';
+      els.overlay.classList.remove('hidden');
+      
+      els.modal.innerHTML = `
+        <div style="text-align: center; padding: 40px 0;">
+          <div class="loader"></div>
+          <h3 style="color: var(--gold-2);">冒険中...</h3>
+          <p class="modal-text">荷物を背負い、目的地へ向かっています。</p>
+        </div>
+      `;
+
+      setTimeout(() => {
+        showEvaluationResult();
+      }, 1500);
+    });
+
+    els.resetBtn.addEventListener('click', () => {
+      selected.clear();
+      mysteryRolls.length = 0;
+      renderItems();
+      renderSelectedList();
+      if (setupDone && !isJourneyFinished) updatePreview();
+    });
+
+    els.restartBtn.addEventListener('click', () => {
+      isJourneyFinished = false;
+      setupDone = false;
+      selected.clear();
+      mysteryRolls.length = 0;
+      currentJourney = null;
+      currentCompanion = null;
+      
+      els.setupSection.style.display = 'block';
+      els.packingSection.style.display = 'none';
+      
+      els.breakdown.innerHTML = 'まずは条件を決めよう。荷物はそのあとで選べるようになるよ。';
+    });
+
+    els.shareBtn.addEventListener('click', () => {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(lastResultText).then(() => {
+          showCopyToast('結果をクリップボードにコピーしました');
+        }).catch(err => {
+          alert('コピーに失敗しました。');
+        });
+      }
+    });
+
+  </script>
+</body>
+</html>
