@@ -34,6 +34,7 @@
         radial-gradient(circle at 10% 10%, rgba(197, 163, 101, 0.08), transparent 30%),
         radial-gradient(circle at 90% 80%, rgba(80, 120, 160, 0.06), transparent 30%),
         var(--bg);
+      overflow-x: hidden; /* 横スクロールを防止 */
     }
 
     body::before {
@@ -626,6 +627,7 @@
       100% { transform: rotate(360deg); } 
     }
 
+    /* 実績・ツールチップ関連 */
     .achieve-item {
       background: rgba(0, 0, 0, 0.2);
       border: 1px solid var(--line);
@@ -659,13 +661,17 @@
       padding: 10px 14px;
       border-radius: 6px;
       font-size: 0.85rem;
-      white-space: nowrap;
+      white-space: normal; /* 折り返しを許可 */
+      width: max-content;
+      max-width: 260px; /* 横幅の制限 */
+      text-align: center;
       transition: 0.2s;
       z-index: 10;
       box-shadow: var(--shadow);
       pointer-events: none;
     }
     
+    /* PC表示での上部アイテムのツールチップ調整 */
     .achieve-item:nth-child(1) .tooltip,
     .achieve-item:nth-child(2) .tooltip,
     .achieve-item:nth-child(3) .tooltip,
@@ -678,6 +684,25 @@
     .achieve-item:active .tooltip {
       visibility: visible;
       opacity: 1;
+    }
+
+    /* スマホ表示ではツールチップを画面下部に固定して見切れを防ぐ */
+    @media (max-width: 680px) {
+      .tooltip,
+      .achieve-item:nth-child(1) .tooltip,
+      .achieve-item:nth-child(2) .tooltip,
+      .achieve-item:nth-child(3) .tooltip,
+      .achieve-item:nth-child(4) .tooltip {
+        position: fixed;
+        top: auto;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90vw;
+        max-width: 320px;
+        z-index: 100;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      }
     }
 
     .achieve-category-title {
@@ -741,6 +766,7 @@
       to { transform: translateX(0); opacity: 1; }
     }
     
+    /* 画面切り替え用のスタイル */
     #packingSection {
       display: none;
     }
@@ -1103,7 +1129,9 @@
               <li>4. 旅に出発し、結果（スコア）を確認します。</li>
             </ul>
             <p class="modal-text">
-              同行者の好物や、アイテム同士の組み合わせ（シナジー）を見つけることが高得点の鍵となります。それでは、良い旅を！
+              同行者の好物や、アイテム同士の組み合わせ（シナジー）を見つけることが高得点の鍵となります。<br><br>
+              また、「タイムアタックモード」は30秒の制限時間でランダムな条件に挑む上級者向けのモードです。通常モードでコツを掴んだら、ぜひ挑戦してみてください！<br>
+              それでは、良い旅を！
             </p>
           </div>
           <div class="modal-actions" style="margin-top: 20px;">
@@ -1573,7 +1601,6 @@
         score += chaos;
       }
 
-      // タイムアタックボーナス (残り時間÷2 最大15点)
       if (isTimeAttack && taTimeLeft > 0) {
         score += Math.floor(taTimeLeft / 2);
       }
@@ -1868,6 +1895,7 @@
             <div class="journey-badge">お知らせ</div>
             <h3>更新情報</h3>
             <ul class="update-list">
+              <li>2026/05/11：スマホでの実績の表示崩れを修正し、チュートリアルにタイムアタックの説明を追加しました。</li>
               <li>2026/05/11：タイムアタックモードを実装し、実績をカテゴリごとに分けて確認できるようにしました。</li>
               <li>2026/05/10：新アイテム「スパイス」を追加しました。UIの改修を行いました。</li>
               <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。難易度調整を行いました。</li>
