@@ -20,6 +20,7 @@
       --shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
       --radius: 12px;
       --warn: #e67e22;
+      --danger: #d9534f;
     }
 
     * { box-sizing: border-box; }
@@ -209,6 +210,13 @@
       color: #fff;
     }
 
+    .btn-danger {
+      background: linear-gradient(180deg, #a63e3e, #802828);
+      border-color: rgba(230, 138, 138, 0.4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
     .btn-secondary {
       background: linear-gradient(180deg, #3a3f4a, #262930);
       color: var(--text);
@@ -244,10 +252,19 @@
       font-weight: normal;
     }
 
+    .pill-timer {
+      background: rgba(217, 83, 79, 0.2);
+      border-color: var(--danger);
+      color: #ffb3b3;
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
     .items {
       display: grid;
       gap: 10px;
-      max-height: 400px;
+      max-height: 350px;
       overflow-y: auto;
       padding-right: 6px;
     }
@@ -277,7 +294,7 @@
       border: 1px solid var(--line);
     }
 
-    .item.disabled { opacity: 0.6; }
+    .item.disabled { opacity: 0.6; pointer-events: none; }
 
     .item-main { display: grid; gap: 6px; }
     .item-title {
@@ -663,6 +680,14 @@
       opacity: 1;
     }
 
+    .achieve-category-title {
+      font-size: 1.05rem;
+      color: var(--gold);
+      margin: 16px 0 8px 0;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 4px;
+    }
+
     #toast-container {
       position: fixed;
       bottom: 20px;
@@ -761,10 +786,11 @@
               <option value="hard">むずかしい</option>
             </select>
           </div>
-          <div class="control-row">
+          <div class="btn-row">
             <button class="btn-primary" id="setupBtn">条件を読んで旅支度しろ！</button>
-            <div class="locked-hint">難易度を選び、行き先と同行者を決めてから荷造りを始めます。</div>
+            <button class="btn-danger" id="taModeBtn">⏱ タイムアタックモード</button>
           </div>
+          <div class="locked-hint">難易度を選び、行き先と同行者を決めてから荷造りを始めます。</div>
         </div>
       </section>
     </div>
@@ -772,8 +798,9 @@
     <div id="packingSection">
       <section class="card" style="margin-bottom: 16px;">
         <h2>今回の旅の条件</h2>
-        <div class="results" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="results" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
           <div class="pill"><strong>難易度</strong><span id="journeyDiffText"></span></div>
+          <div class="pill" id="timerDisplayWrap" style="display: none;"><strong>残り時間</strong><div class="pill-timer" id="timerDisplay">30秒</div></div>
           <div class="pill"><strong>状態</strong><span id="journeyText"></span></div>
           <div class="pill"><strong>同行者</strong><span id="companionText"></span></div>
           <div class="pill"><strong>ルール</strong><span id="ruleText"></span></div>
@@ -942,50 +969,67 @@
       { id: 'fog', name: '濃霧', note: '見通しが悪い', foodNeedMod: 0, dangerMod: -3, weightMod: 0, capMod: 0 }
     ];
 
+    // 実績カテゴリ：進行度、プレイスタイル、キャラクター特化、特殊、タイムアタック
     const achievementsDef = [
-      { id: 'first_play', name: '荷造り初心者', desc: 'はじめて旅に出た(スコア問わず)', check: c => c.stats && c.stats.firstPlay },
-      { id: 'ou_s', name: '壱ノ護王の理解者', desc: '壱ノ護王を同行者にしてSランクを達成する', check: c => c.cId === 'ou' && c.rank === 'S' },
-      { id: 'machi_s', name: 'マッヒーの理解者', desc: 'マッヒーを同行者にしてSランクを達成する', check: c => c.cId === 'machi' && c.rank === 'S' },
-      { id: 'fubuki_s', name: 'フブキの理解者', desc: 'フブキを同行者にしてSランクを達成する', check: c => c.cId === 'fubuki' && c.rank === 'S' },
-      { id: 'yocchi_s', name: 'よっちの理解者', desc: 'よっちを同行者にしてSランクを達成する', check: c => c.cId === 'yocchi' && c.rank === 'S' },
-      { id: 'nia_s', name: 'にゃありいの理解者', desc: 'にゃありいを同行者にしてSランクを達成する', check: c => c.cId === 'nia' && c.rank === 'S' },
-      { id: 'all_s', name: '古代勇者の理解者', desc: 'すべてのキャラクターでSランクを達成する', check: c => {
+      // 進行度
+      { id: 'first_play', category: '進行度', name: '荷造り初心者', desc: 'はじめて旅に出た(スコア問わず)', check: c => c.stats && c.stats.firstPlay },
+      { id: 'ou_s', category: '進行度', name: '壱ノ護王の理解者', desc: '壱ノ護王を同行者にしてSランクを達成する', check: c => c.cId === 'ou' && c.rank === 'S' },
+      { id: 'machi_s', category: '進行度', name: 'マッヒーの理解者', desc: 'マッヒーを同行者にしてSランクを達成する', check: c => c.cId === 'machi' && c.rank === 'S' },
+      { id: 'fubuki_s', category: '進行度', name: 'フブキの理解者', desc: 'フブキを同行者にしてSランクを達成する', check: c => c.cId === 'fubuki' && c.rank === 'S' },
+      { id: 'yocchi_s', category: '進行度', name: 'よっちの理解者', desc: 'よっちを同行者にしてSランクを達成する', check: c => c.cId === 'yocchi' && c.rank === 'S' },
+      { id: 'nia_s', category: '進行度', name: 'にゃありいの理解者', desc: 'にゃありいを同行者にしてSランクを達成する', check: c => c.cId === 'nia' && c.rank === 'S' },
+      { id: 'all_s', category: '進行度', name: '古代勇者の理解者', desc: 'すべてのキャラクターでSランクを達成する', check: c => {
           const s = c.stats.chars;
           return s && s.ou?.s && s.machi?.s && s.fubuki?.s && s.yocchi?.s && s.nia?.s;
       }},
-      { id: 'perf', name: '完璧主義', desc: 'スコア100点満点を達成する', check: c => c.score === 100 },
-      { id: 'all_100', name: '古代勇者専属パッカー', desc: 'すべてのキャラクターで100点満点を達成する', check: c => {
+      { id: 'perf', category: '進行度', name: '完璧主義', desc: 'スコア100点満点を達成する', check: c => c.score === 100 },
+      { id: 'all_100', category: '進行度', name: '古代勇者専属パッカー', desc: 'すべてのキャラクターで100点満点を達成する', check: c => {
           const s = c.stats.chars;
           return s && s.ou?.s100 && s.machi?.s100 && s.fubuki?.s100 && s.yocchi?.s100 && s.nia?.s100;
       }},
-      { id: 'hard_s', name: '過酷な世界の歩き方', desc: '難易度「むずかしい」でSランクを達成する', check: c => c.diff === 'hard' && c.rank === 'S' },
-      { id: 'hard_100', name: '冒険者の鑑', desc: '難易度「むずかしい」でスコア100点を達成する', check: c => c.diff === 'hard' && c.score === 100 },
-      { id: 'all_hard_100', name: '伝説のロジスティシャン', desc: 'すべてのキャラクターの難易度「むずかしい」で100点満点を達成する', check: c => {
+      { id: 'hard_s', category: '進行度', name: '過酷な世界の歩き方', desc: '難易度「むずかしい」でSランクを達成する', check: c => c.diff === 'hard' && c.rank === 'S' },
+      { id: 'hard_100', category: '進行度', name: '冒険者の鑑', desc: '難易度「むずかしい」でスコア100点を達成する', check: c => c.diff === 'hard' && c.score === 100 },
+      { id: 'all_hard_100', category: '進行度', name: '伝説のロジスティシャン', desc: 'すべてのキャラクターの難易度「むずかしい」で100点満点を達成する', check: c => {
           const s = c.stats.hard100;
           return s && s.ou && s.machi && s.fubuki && s.yocchi && s.nia;
       }},
-      { id: 'mini', name: '生粋のミニマリスト', desc: 'アイテムの総数を3個以下にしてSランクを達成する', check: c => c.totalItems <= 3 && c.rank === 'S' },
-      { id: 'pack_master', name: '荷造りの達人', desc: 'サイズと重さの両方を、上限値ぴったりにしてSランクを達成する', check: c => c.t.size === c.r.capacity && c.t.weight === c.r.weightLimit && c.rank === 'S' },
-      { id: 'health', name: '健康志向', desc: 'ポーションと薬草を一つも使わずにSランクを達成する', check: c => !c.items.some(i => i.id === 'potion' || i.id === 'herb') && c.rank === 'S' },
-      { id: 'gamble', name: '至高のギャンブラー', desc: '「よっちの謎袋」を3つ以上入れて、Sランクを達成する', check: c => c.items.filter(i => i.id === 'mystery').length >= 3 && c.rank === 'S' },
-      { id: 'greedy', name: '欲張りさん', desc: '食料を全種類持ってSランクを達成する', check: c => {
+
+      // プレイスタイル
+      { id: 'mini', category: 'プレイスタイル', name: '生粋のミニマリスト', desc: 'アイテムの総数を3個以下にしてSランクを達成する', check: c => c.totalItems <= 3 && c.rank === 'S' },
+      { id: 'pack_master', category: 'プレイスタイル', name: '荷造りの達人', desc: 'サイズと重さの両方を、上限値ぴったりにしてSランクを達成する', check: c => c.t.size === c.r.capacity && c.t.weight === c.r.weightLimit && c.rank === 'S' },
+      { id: 'health', category: 'プレイスタイル', name: '健康志向', desc: 'ポーションと薬草を一つも使わずにSランクを達成する', check: c => !c.items.some(i => i.id === 'potion' || i.id === 'herb') && c.rank === 'S' },
+      { id: 'gamble', category: 'プレイスタイル', name: '至高のギャンブラー', desc: '「よっちの謎袋」を3つ以上入れて、Sランクを達成する', check: c => c.items.filter(i => i.id === 'mystery').length >= 3 && c.rank === 'S' },
+      { id: 'greedy', category: 'プレイスタイル', name: '欲張りさん', desc: '食料を全種類持ってSランクを達成する', check: c => {
           const fTypes = ['meat', 'fish', 'fruit', 'cookie', 'potion', 'herb', 'bread', 'jam'];
           return fTypes.every(fid => c.items.some(i => i.id === fid)) && c.rank === 'S';
       }},
-      { id: 'sweets', name: 'スイーツパラダイス', desc: 'クッキー、ジャム、ドライフルーツのみで必要食料を満たしてSランクを達成する', check: c => {
+
+      // キャラクター特化
+      { id: 'sweets', category: 'キャラクター特化', name: 'スイーツパラダイス', desc: 'クッキー、ジャム、ドライフルーツのみで必要食料を満たしてSランクを達成する', check: c => {
           const foodItems = c.items.filter(i => i.food > 0);
           const isOnlySweets = foodItems.length > 0 && foodItems.every(i => ['cookie', 'jam', 'fruit'].includes(i.id));
           return isOnlySweets && c.foodGap === 0 && c.rank === 'S';
       }},
-      { id: 'meat', name: '肉の宴', desc: '干し肉を5個以上持ってSランクを達成する', check: c => c.items.filter(i => i.id === 'meat').length >= 5 && c.rank === 'S' },
-      { id: 'bread_jam', name: 'やっぱりパンにはジャム', desc: 'パンとジャムの両方を荷物に入れてSランクを達成する', check: c => c.items.some(i => i.id === 'bread') && c.items.some(i => i.id === 'jam') && c.rank === 'S' },
-      { id: 'safe', name: '絶対安全領域', desc: '合計の危険度をマイナスにしてSランクを達成する', check: c => c.t.danger < 0 && c.rank === 'S' },
-      { id: 'warm', name: 'ぬくもりの旅', desc: 'ふわふわの毛布を2つ以上持っていき、士気を20以上にしてSランクを達成する', check: c => c.items.filter(i => i.id === 'blanket').length >= 2 && c.t.morale >= 20 && c.rank === 'S' },
-      { id: 'diet', name: '孤高の偏食家', desc: '偏食ペナルティを受けながらもSランクを達成する', check: c => c.dietPenalty && c.rank === 'S' },
-      { id: 'edge', name: 'ギリギリの生還', desc: 'スコアがぴったり60点でクリアする', check: c => c.score === 60 },
-      { id: 'danger', name: '旅は危険と隣り合わせ', desc: '危険度を超過しながらもSランクを達成する', check: c => c.overDanger > 0 && c.rank === 'S' },
-      { id: 'eat_over', name: '暴食の王', desc: '食料を45以上にしてSランクを達成する', check: c => c.t.food >= 45 && c.rank === 'S' },
-      { id: 'eat_less', name: '小食の王', desc: '食料を15以下にしてSランクを達成する', check: c => c.t.food <= 15 && c.rank === 'S' }
+      { id: 'meat', category: 'キャラクター特化', name: '肉の宴', desc: '干し肉を5個以上持ってSランクを達成する', check: c => c.items.filter(i => i.id === 'meat').length >= 5 && c.rank === 'S' },
+      { id: 'bread_jam', category: 'キャラクター特化', name: 'やっぱりパンにはジャム', desc: 'パンとジャムの両方を荷物に入れてSランクを達成する', check: c => c.items.some(i => i.id === 'bread') && c.items.some(i => i.id === 'jam') && c.rank === 'S' },
+      { id: 'safe', category: 'キャラクター特化', name: '絶対安全領域', desc: '合計の危険度をマイナスにしてSランクを達成する', check: c => c.t.danger < 0 && c.rank === 'S' },
+      { id: 'warm', category: 'キャラクター特化', name: 'ぬくもりの旅', desc: 'ふわふわの毛布を2つ以上持っていき、士気を20以上にしてSランクを達成する', check: c => c.items.filter(i => i.id === 'blanket').length >= 2 && c.t.morale >= 20 && c.rank === 'S' },
+      
+      // 特殊
+      { id: 'diet', category: '特殊', name: '孤高の偏食家', desc: '偏食ペナルティを受けながらもSランクを達成する', check: c => c.dietPenalty && c.rank === 'S' },
+      { id: 'edge', category: '特殊', name: 'ギリギリの生還', desc: 'スコアがぴったり60点でクリアする', check: c => c.score === 60 },
+      { id: 'danger', category: '特殊', name: '旅は危険と隣り合わせ', desc: '危険度を超過しながらもSランクを達成する', check: c => c.overDanger > 0 && c.rank === 'S' },
+      { id: 'eat_over', category: '特殊', name: '暴食の王', desc: '食料を45以上にしてSランクを達成する', check: c => c.t.food >= 45 && c.rank === 'S' },
+      { id: 'eat_less', category: '特殊', name: '小食の王', desc: '食料を15以下にしてSランクを達成する', check: c => c.t.food <= 15 && c.rank === 'S' },
+
+      // タイムアタック
+      { id: 'ta_first', category: 'タイムアタック', name: '大慌て荷造り', desc: 'はじめてタイムアタックモードで旅に出た(スコア問わず)', check: c => c.stats && c.stats.taFirstPlay },
+      { id: 'ta_s', category: 'タイムアタック', name: '対応力抜群', desc: 'タイムアタックモードでSランクを達成する', check: c => c.isTA && c.rank === 'S' },
+      { id: 'ta_100', category: 'タイムアタック', name: '対応力カンスト', desc: 'タイムアタックモードで100点満点を達成する', check: c => c.isTA && c.score === 100 },
+      { id: 'ta_all_100', category: 'タイムアタック', name: '寝坊の救世主', desc: 'すべてのキャラクターのタイムアタックモードで100点満点を達成する', check: c => {
+          const s = c.stats.ta100;
+          return s && s.ou && s.machi && s.fubuki && s.yocchi && s.nia;
+      }}
     ];
 
     const selected = new Map();
@@ -999,6 +1043,11 @@
     let pendingJourney = null;
     let pendingCompanion = null;
     let lastResultText = "";
+
+    // タイムアタック用変数
+    let isTimeAttack = false;
+    let taTimerInterval = null;
+    let taTimeLeft = 30;
 
     const els = {
       overlay: document.getElementById('overlay'),
@@ -1023,10 +1072,13 @@
       packingSection: document.getElementById('packingSection'),
       difficulty: document.getElementById('difficulty'),
       setupBtn: document.getElementById('setupBtn'),
+      taModeBtn: document.getElementById('taModeBtn'),
       setoffBtn: document.getElementById('setoffBtn'),
       resetBtn: document.getElementById('resetBtn'),
       restartBtn: document.getElementById('restartBtn'),
-      shareBtn: document.getElementById('shareBtn')
+      shareBtn: document.getElementById('shareBtn'),
+      timerDisplayWrap: document.getElementById('timerDisplayWrap'),
+      timerDisplay: document.getElementById('timerDisplay')
     };
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -1322,12 +1374,11 @@
       
       if (ctx.hasBread && ctx.hasJam) morale += 5;
 
-      // スパイスのシナジー（肉か魚と一緒に）
       if (ctx.hasSpice && (ctx.hasMeat || ctx.hasFish)) {
         if (id === 'ou') {
           morale += 10;
         } else if (id === 'fubuki') {
-          // 辛いのが苦手なので上がらない
+          // 何もしない
         } else {
           morale += 5;
         }
@@ -1458,6 +1509,9 @@
 
     function showEvaluationResult() {
       isJourneyFinished = true;
+      if (taTimerInterval) clearInterval(taTimerInterval);
+      els.timerDisplayWrap.style.display = 'none';
+
       const rules = getCurrentRules();
       const selectedItems = getSelectedItems();
       const totals = calcTotals(selectedItems);
@@ -1519,6 +1573,11 @@
         score += chaos;
       }
 
+      // タイムアタックボーナス (残り時間÷2 最大15点)
+      if (isTimeAttack && taTimeLeft > 0) {
+        score += Math.floor(taTimeLeft / 2);
+      }
+
       score *= d.scoreMult;
       score = Math.max(0, Math.min(100, Math.round(score)));
 
@@ -1535,12 +1594,19 @@
       let playStats = JSON.parse(localStorage.getItem('playStats') || '{}');
       if(!playStats.chars) playStats.chars = {};
       if(!playStats.hard100) playStats.hard100 = {};
+      if(!playStats.ta100) playStats.ta100 = {};
       
       if (!playStats.chars[currentCompanion]) playStats.chars[currentCompanion] = { s: false, s100: false };
       if (rank === 'S') playStats.chars[currentCompanion].s = true;
       if (score === 100) playStats.chars[currentCompanion].s100 = true;
-      if (score === 100 && d.label === 'むずかしい') playStats.hard100[currentCompanion] = true;
+      if (score === 100 && d.label === 'むずかしい' && !isTimeAttack) playStats.hard100[currentCompanion] = true;
       playStats.firstPlay = true;
+
+      if (isTimeAttack) {
+        playStats.taFirstPlay = true;
+        if (score === 100) playStats.ta100[currentCompanion] = true;
+      }
+
       localStorage.setItem('playStats', JSON.stringify(playStats));
 
       const evalCtx = {
@@ -1557,6 +1623,7 @@
         dietPenalty: dietPenalty !== null,
         foodGap: foodGap,
         overDanger: overDanger,
+        isTA: isTimeAttack,
         stats: playStats
       };
       checkAchievements(evalCtx);
@@ -1567,13 +1634,15 @@
       }, {});
       const itemsString = Object.entries(itemListText).map(([name, qty]) => `${name}×${qty}`).join(', ');
 
-      lastResultText = `古代勇者の旅支度\n難易度: ${d.label}\n場所: ${currentJourney.name} × ${currentJourney.weather.name}\n同行者: ${companions[currentCompanion].name}\nスコア: ${score}点 (${rank})\n\n【持ち物】\n${itemsString}\n\nサイズ: ${totals.size}/${rules.capacity}\n重さ: ${totals.weight}/${rules.weightLimit}\n食料: ${totals.food}/${rules.foodNeed}\n危険度: ${totals.danger}/${rules.dangerLimit}\n士気: ${morale}`;
+      const taHeader = isTimeAttack ? `[タイムアタックモード] 残り時間: ${taTimeLeft}秒\n` : '';
+      lastResultText = `古代勇者の旅支度\n${taHeader}難易度: ${d.label}\n場所: ${currentJourney.name} × ${currentJourney.weather.name}\n同行者: ${companions[currentCompanion].name}\nスコア: ${score}点 (${rank})\n\n【持ち物】\n${itemsString}\n\nサイズ: ${totals.size}/${rules.capacity}\n重さ: ${totals.weight}/${rules.weightLimit}\n食料: ${totals.food}/${rules.foodNeed}\n危険度: ${totals.danger}/${rules.dangerLimit}\n士気: ${morale}`;
 
       els.modal.innerHTML = `
         <div class="modal-content-wrap">
           <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
             <div class="journey-badge">冒険結果</div>
             <h3>旅を終えました</h3>
+            ${isTimeAttack ? `<div style="color:var(--warn); margin-bottom:10px; font-weight:bold;">[タイムアタック] 残り時間: ${taTimeLeft}秒</div>` : ''}
             
             <div class="score-box" style="margin-bottom: 20px;">
               <div class="score-circle" style="background: conic-gradient(var(--gold) ${score * 3.6}deg, rgba(255,255,255,0.04) 0deg);">
@@ -1710,6 +1779,56 @@
       packBtn.addEventListener('click', finalizeSetup);
     }
 
+    function startTA() {
+      isTimeAttack = true;
+      els.difficulty.value = 'hard';
+      pendingJourney = generateJourney();
+      
+      const compKeys = Object.keys(companions);
+      pendingCompanion = compKeys[Math.floor(Math.random() * compKeys.length)];
+
+      els.overlay.classList.remove('hidden');
+      
+      let countdown = 3;
+      els.modal.innerHTML = `
+        <div class="modal-content-wrap" style="text-align: center; justify-content: center;">
+          <h2 style="color: var(--warn); font-size: 2rem;">急いで荷物を詰めろ！</h2>
+          <div style="margin: 20px 0; display:flex; gap:10px; justify-content:center;">
+            <div class="pill">場所: ${pendingJourney.name} × ${pendingJourney.weather.name}</div>
+            <div class="pill">同行者: ${companions[pendingCompanion].name}</div>
+          </div>
+          <div id="countdownNumber" style="font-size: 6rem; font-weight: 800; color: var(--gold-2); margin-top:20px;">${countdown}</div>
+        </div>
+      `;
+
+      const cdInterval = setInterval(() => {
+        countdown--;
+        if (countdown > 0) {
+          document.getElementById('countdownNumber').textContent = countdown;
+        } else {
+          clearInterval(cdInterval);
+          finalizeSetup();
+          
+          taTimeLeft = 30;
+          els.timerDisplayWrap.style.display = 'block';
+          els.timerDisplay.textContent = `${taTimeLeft}秒`;
+          
+          taTimerInterval = setInterval(() => {
+            if(!setupDone || isJourneyFinished) {
+              clearInterval(taTimerInterval);
+              return;
+            }
+            taTimeLeft--;
+            els.timerDisplay.textContent = `${taTimeLeft}秒`;
+            if (taTimeLeft <= 0) {
+              clearInterval(taTimerInterval);
+              els.setoffBtn.click();
+            }
+          }, 1000);
+        }
+      }, 1000);
+    }
+
     function finalizeSetup() {
       currentJourney = pendingJourney;
       currentCompanion = pendingCompanion;
@@ -1727,6 +1846,10 @@
       els.resetBtn.style.display = 'block';
       els.restartBtn.style.display = 'none';
       els.shareBtn.style.display = 'none';
+      
+      if (!isTimeAttack) {
+        els.timerDisplayWrap.style.display = 'none';
+      }
 
       renderItems();
       renderJourneySummary();
@@ -1745,11 +1868,13 @@
             <div class="journey-badge">お知らせ</div>
             <h3>更新情報</h3>
             <ul class="update-list">
+              <li>2026/05/11：タイムアタックモードを実装し、実績をカテゴリごとに分けて確認できるようにしました。</li>
               <li>2026/05/10：新アイテム「スパイス」を追加しました。UIの改修を行いました。</li>
               <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。難易度調整を行いました。</li>
               <li>2026/05/08：様々な条件で獲得できる「実績解除（アチーブメント）」を追加しました。獲得した実績は「実績一覧」から確認できます。</li>
               <li>2026/05/07：「古代勇者の旅支度」を試作しました。</li>
               </ul>
+            <p class="modal-text">今後のアップデート予定<br>・新たな同行者やアイテムの追加</p>
           </div>
           <div class="modal-actions" style="margin-top: 20px;">
             <button type="button" class="btn-secondary" id="closeUpdateBtn">閉じる</button>
@@ -1768,6 +1893,7 @@
 
     function renderAchievementModal() {
       const unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+      const categories = ['進行度', 'プレイスタイル', 'キャラクター特化', '特殊', 'タイムアタック'];
       
       let html = `
         <div class="modal-content-wrap">
@@ -1775,26 +1901,33 @@
             <div class="journey-badge">コレクション</div>
             <h3>実績一覧</h3>
             <p class="modal-text">達成した実績の確認ができます。スマホならタップ、PCならマウスを乗せて達成条件を見てみましょう。</p>
-            <div class="achieve-container" style="display: grid; gap: 10px; margin-bottom: 20px;">
       `;
-      
-      achievementsDef.forEach(ach => {
-        const isUnlocked = unlocked.includes(ach.id);
-        const displayName = isUnlocked ? ach.name : '？？？';
-        const displayDesc = isUnlocked ? ach.desc : '未獲得のシークレット実績です。';
-        const icon = isUnlocked ? '🏆' : '🔒';
+
+      categories.forEach(cat => {
+        const catAchs = achievementsDef.filter(a => a.category === cat);
+        if (catAchs.length === 0) return;
         
-        html += `
-          <div class="achieve-item ${isUnlocked ? 'unlocked' : 'locked'}">
-            <span style="font-weight: 700;">${icon} ${displayName}</span>
-            <span style="font-size: 0.8rem; color: var(--muted);">${isUnlocked ? '達成済' : '未達成'}</span>
-            <div class="tooltip">${displayDesc}</div>
-          </div>
-        `;
-      });
-      
-      html += `
+        html += `<div class="achieve-category-title">${cat}</div>`;
+        html += `<div class="achieve-container" style="display: grid; gap: 10px; margin-bottom: 20px;">`;
+        
+        catAchs.forEach(ach => {
+          const isUnlocked = unlocked.includes(ach.id);
+          const displayName = isUnlocked ? ach.name : '？？？';
+          const displayDesc = isUnlocked ? ach.desc : '未獲得のシークレット実績です。';
+          const icon = isUnlocked ? '🏆' : '🔒';
+          
+          html += `
+            <div class="achieve-item ${isUnlocked ? 'unlocked' : 'locked'}">
+              <span style="font-weight: 700;">${icon} ${displayName}</span>
+              <span style="font-size: 0.8rem; color: var(--muted);">${isUnlocked ? '達成済' : '未達成'}</span>
+              <div class="tooltip">${displayDesc}</div>
             </div>
+          `;
+        });
+        html += `</div>`;
+      });
+
+      html += `
             <div style="text-align: right;">
               <button class="btn-secondary" style="font-size:0.8rem; padding: 6px 12px; width: auto;" id="resetAchieveBtn">実績データをリセット</button>
             </div>
@@ -1823,12 +1956,15 @@
     }
 
     els.setupBtn.addEventListener('click', openJourneyModal);
+    els.taModeBtn.addEventListener('click', startTA);
 
     els.setoffBtn.addEventListener('click', () => {
       if (!setupDone || isJourneyFinished) return;
       modalStage = 'evaluating';
-      els.overlay.classList.remove('hidden');
       
+      if(taTimerInterval) clearInterval(taTimerInterval);
+
+      els.overlay.classList.remove('hidden');
       els.modal.innerHTML = `
         <div style="text-align: center; padding: 40px 0;">
           <div class="loader"></div>
@@ -1853,10 +1989,12 @@
     els.restartBtn.addEventListener('click', () => {
       isJourneyFinished = false;
       setupDone = false;
+      isTimeAttack = false;
       selected.clear();
       mysteryRolls.length = 0;
       currentJourney = null;
       currentCompanion = null;
+      if (taTimerInterval) clearInterval(taTimerInterval);
       
       els.setupSection.style.display = 'block';
       els.packingSection.style.display = 'none';
