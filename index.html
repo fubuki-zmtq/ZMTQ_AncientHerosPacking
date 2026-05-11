@@ -840,7 +840,7 @@
       ou: {
         name: '壱ノ護王',
         emoji: '👑',
-        description: 'サイズも重量も多めに持てる。食料消費は少し多めで、危険への耐性は高め。',
+        description: '荷物は多く持てる。食料消費は少し多めだが、危険への耐性は高い。',
         capBonus: 3,
         weightBonus: 3,
         foodNeedMult: 1.15,
@@ -849,6 +849,8 @@
         lines: {
           high: '壱ノ護王「素晴らしい取捨選択です」',
           like: '壱ノ護王「ドライフルーツ、入れてくださったんですね」',
+          dangerOver: '壱ノ護王「少し危ないかもしれませんね」',
+          foodShort: '壱ノ護王「腹が減っては思うように戦えませんね…」',
           default: '壱ノ護王「これから学んでいきましょう」'
         }
       },
@@ -862,18 +864,18 @@
         dangerTolMult: 1.3,
         moraleWeight: 1.5,
         lines: {
-          high: 'マッヒー「お前やるじゃねぇか！」',
+          high: 'マッヒー「やるじゃん、超良い旅だったわ」',
           like: 'マッヒー「肉！肉があればいいってもんよ！」',
           dangerOver: 'マッヒー「危ねーのもいいがちょっとは考えろよ？」',
-          foodShort: 'マッヒー「腹減った…」',
+          foodShort: 'マッヒー「腹減った…もう動けん……」',
           lowMorale: 'マッヒー「何とか終えたけど、つまんねー旅だったぜ」',
-          default: 'マッヒー「悪くねぇ旅ではあったな」'
+          default: 'マッヒー「なんか疲れたなぁ…」'
         }
       },
       fubuki: {
         name: 'フブキ',
         emoji: '❄',
-        description: 'ミニマリスト。小食で危険は嫌い。',
+        description: '超ミニマリスト。小食で危険は嫌い。',
         capBonus: -5,
         weightBonus: -4,
         foodNeedMult: 0.8,
@@ -882,8 +884,9 @@
         lines: {
           high: 'フブキ「やるじゃない、良い旅だったわ」',
           like: 'フブキ「魚、好きなのよね」',
+          foodShort: 'フブキ「さすがにお腹が空いたわ…」',
           dangerOver: 'フブキ「危ない旅は嫌ね」',
-          default: 'フブキ「疲れたわ、早く休みたい…」'
+          default: 'フブキ「疲れた、早く休みたい…」'
         }
       },
       yocchi: {
@@ -900,7 +903,7 @@
           dangerOkay: 'よっち「旅は危ないくらいが面白いですからね！」',
           foodShort: 'よっち「よっちお腹空いた～…」',
           lowMorale: 'よっち「もっと面白いことしたいな〜」',
-          default: 'よっち「もう少し刺激ある旅がしたいなぁ」'
+          default: 'よっち「あんまり上手じゃないですね！」'
         }
       },
       nia: {
@@ -916,6 +919,7 @@
           high: 'にゃありい「すっごく楽しかったにゃ！」',
           dangerOver: 'にゃありい「ワクワクは好きだけど怖いのは嫌にゃ～～泣」',
           like: 'にゃありい「クッキーにゃ！！クッキー大好きにゃ！」',
+          foodShort: 'にゃありい「お腹すいたのにゃ…」',
           lowMorale: 'にゃありい「次はもっとワクワクする旅にしたいにゃ」',
           default: 'にゃありい「にゃあは疲れたにゃ…」'
         }
@@ -926,7 +930,7 @@
       { id: 'plains', name: '草原', flavor: 'ノーマル', note: 'すごしやすく標準的な旅', capBonus: 0, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '草原は基本に忠実。落ち着いて荷物を組もう。' },
       { id: 'snowfield', name: '雪原', flavor: '食料消費大', note: '寒さで消耗しやすい', capBonus: 0, weightBonus: 0, foodNeed: 26, dangerLimit: 8, banner: '雪の道は腹が減る。食料を多めに持っていこう。' },
       { id: 'mountain', name: '山岳', flavor: '重量制限厳しい', note: '軽さが正義', capBonus: 0, weightBonus: -4, foodNeed: 18, dangerLimit: 8, banner: '山岳地帯は重い荷物がそのまま罪になる。' },
-      { id: 'cave', name: '洞窟', flavor: 'サイズ制限厳しい', note: '大きい荷物は入らない', capBonus: -4, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '洞窟は詰め込みすぎると通れない。かさばるものは置いていこう' },
+      { id: 'cave', name: '洞窟', flavor: 'サイズ制限厳しい', note: '大きい荷物は入らない', capBonus: -4, weightBonus: 0, foodNeed: 18, dangerLimit: 8, banner: '洞窟は詰め込みすぎると通れない。かさばるものは置いていこう。' },
       { id: 'demon', name: '魔王領', flavor: 'サイズ制限緩・薬必須', note: '危険な場所。ポーションか薬草が必須', capBonus: 2, weightBonus: 2, foodNeed: 18, dangerLimit: 4, banner: '魔物が出てくる可能性があり危険。しっかり準備していこう。' }
     ];
 
@@ -1372,19 +1376,32 @@
       let main = '';
       if (score >= 80 && c.lines.high) main = c.lines.high;
       else if (id === 'ou' && ctx.hasFruit) main = c.lines.like;
+      else if (id === 'ou' && ctx.dangerOver) main = c.lines.dangerOver;
+      else if (id === 'ou' && ctx.foodShort) main = c.lines.foodShort;
       else if (id === 'machi' && ctx.hasMeat) main = c.lines.like;
       else if (id === 'machi' && ctx.dangerOver) main = c.lines.dangerOver;
       else if (id === 'machi' && ctx.foodGap > 0) main = c.lines.foodShort;
       else if (id === 'fubuki' && ctx.hasFish) main = c.lines.like;
       else if (id === 'fubuki' && ctx.dangerOver) main = c.lines.dangerOver;
+      else if (id === 'fubuki' && ctx.foodShort) main = c.lines.foodShort;
       else if (id === 'yocchi' && ctx.dangerJustRight) main = c.lines.dangerOkay;
       else if (id === 'yocchi' && ctx.foodGap > 0) main = c.lines.foodShort;
       else if (id === 'nia' && ctx.dangerOver) main = c.lines.dangerOver;
       else if (id === 'nia' && ctx.hasCookie) main = c.lines.like;
       else main = c.lines.default;
 
-      if (id === 'machi' && ctx.hasMystery && score < 80) {
-        main += '\nマッヒー「謎袋は、まあ……結果がすべてだな」';
+      if (ctx.hasMystery && score < 80) {
+        if (id === 'machi') {
+          main += '\nマッヒー「ヘンな袋は、まあ……結果がすべてだな」';
+        } else if (id === 'ou') {
+          main += '\n壱ノ護王「中身のわからないものに頼るのは、少し危険でしたね」';
+        } else if (id === 'fubuki') {
+          main += '\nフブキ「得体の知れない袋なんて持ち込むからよ…」';
+        } else if (id === 'yocchi') {
+          main += '\nよっち「あれ～？ 今回の謎袋はハズレだったみたいですねぇ」';
+        } else if (id === 'nia') {
+          main += '\nにゃありい「この変な袋のせいで疲れちゃったにゃ…」';
+        }
       }
 
       if ((id === 'machi' || id === 'yocchi' || id === 'nia') && morale <= lowMoraleThreshold) {
