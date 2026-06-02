@@ -4,23 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>古代勇者の旅支度</title>
-  <link rel="icon" href="icon.png">
-  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hina+Mincho&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #131417;
-      --bg-2: #1e1f24;
-      --panel: rgba(30, 32, 38, 0.95);
-      --panel-2: rgba(45, 48, 56, 0.95);
-      --panel-3: rgba(58, 62, 71, 0.95);
-      --text: #e2e4e9;
-      --muted: #9ba1ad;
-      --gold: #c5a365;
-      --gold-2: #e6c88a;
-      --line: rgba(255, 255, 255, 0.08);
-      --line-2: rgba(197, 163, 101, 0.3);
-      --shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-      --radius: 12px;
+      --bg: #0f1013;
+      --bg-2: #1a1a20;
+      --panel: rgba(20, 22, 28, 0.95);
+      --panel-2: rgba(30, 33, 40, 0.95);
+      --panel-3: rgba(40, 44, 52, 0.95);
+      --text: #e8e6e3;
+      --muted: #a39f98;
+      --gold: #d4af37;
+      --gold-2: #f3e5ab;
+      --line: rgba(212, 175, 55, 0.2);
+      --line-2: rgba(212, 175, 55, 0.4);
+      --shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+      --radius: 6px;
       --warn: #e67e22;
       --danger: #d9534f;
     }
@@ -31,12 +32,12 @@
       margin: 0;
       min-height: 100vh;
       color: var(--text);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: 'Noto Serif JP', 'Yu Mincho', 'Sawarabi Mincho', serif;
       background:
-        radial-gradient(circle at 10% 10%, rgba(197, 163, 101, 0.08), transparent 30%),
-        radial-gradient(circle at 90% 80%, rgba(80, 120, 160, 0.06), transparent 30%),
+        radial-gradient(circle at 10% 10%, rgba(212, 175, 55, 0.08), transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(80, 120, 160, 0.06), transparent 40%),
         var(--bg);
-      overflow-x: hidden; /* 横スクロールを防止 */
+      overflow-x: hidden;
     }
 
     body::before {
@@ -45,11 +46,16 @@
       inset: 0;
       pointer-events: none;
       background-image:
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
       background-size: 46px 46px;
-      opacity: 0.3;
+      opacity: 0.4;
       mix-blend-mode: screen;
+    }
+
+    h1, h2, h3, .journey-badge, .score-value, .pill-timer {
+      font-family: 'Hina Mincho', serif;
+      font-weight: normal;
     }
 
     .app {
@@ -76,14 +82,14 @@
     .card::after {
       content: "";
       position: absolute;
-      inset: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
-      border-radius: calc(var(--radius) - 6px);
+      inset: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      border-radius: calc(var(--radius) - 4px);
       pointer-events: none;
     }
 
     .header {
-      padding: 20px;
+      padding: 24px 20px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -98,21 +104,21 @@
 
     h1 {
       margin: 0 0 8px;
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      letter-spacing: 0.04em;
-      font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: 0.05em;
       color: var(--gold-2);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6), 0 0 20px rgba(212, 175, 55, 0.2);
     }
 
     .subtitle {
       margin: 0;
       color: var(--muted);
       line-height: 1.7;
+      font-size: 0.95rem;
     }
 
     .btn-info {
-      background: rgba(197, 163, 101, 0.1);
+      background: rgba(212, 175, 55, 0.1);
       border: 1px solid var(--line-2);
       color: var(--gold-2);
       padding: 8px 16px;
@@ -121,17 +127,20 @@
       border-radius: 20px;
       z-index: 2;
       cursor: pointer;
-      font-weight: bold;
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 700;
       transition: 0.2s ease;
+      box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.05);
     }
     
     .btn-info:hover {
-      background: rgba(197, 163, 101, 0.2);
+      background: rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: 1.03fr 0.97fr;
+      grid-template-columns: 1.05fr 0.95fr;
       gap: 16px;
     }
 
@@ -139,20 +148,20 @@
       .grid { grid-template-columns: 1fr; }
     }
 
-    .card { padding: 18px; }
+    .card { padding: 20px; }
     .card h2 {
       margin: 0 0 16px;
-      font-size: 1.1rem;
+      font-size: 1.4rem;
       color: var(--gold);
       letter-spacing: 0.05em;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
     }
 
-    .controls { display: grid; gap: 14px; }
+    .controls { display: grid; gap: 16px; }
     .control-row { display: grid; gap: 8px; }
     .control-row label {
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       color: var(--muted);
     }
 
@@ -160,18 +169,20 @@
       appearance: none;
       -webkit-appearance: none;
       background: linear-gradient(180deg, var(--panel-3), var(--panel-2));
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%23c5a365" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23d4af37" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
       background-repeat: no-repeat;
-      background-position-x: calc(100% - 10px);
+      background-position-x: calc(100% - 12px);
       background-position-y: center;
       color: var(--text);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px 36px 12px 14px;
-      font: inherit;
+      border-radius: var(--radius);
+      padding: 14px 40px 14px 16px;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem;
       outline: none;
       cursor: pointer;
       width: 100%;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
     select:focus {
       border-color: var(--gold);
@@ -186,38 +197,44 @@
       border: 1px solid var(--line);
       background: linear-gradient(180deg, var(--panel-3), var(--panel-2));
       color: var(--text);
-      border-radius: 8px;
-      padding: 12px 14px;
-      font: inherit;
+      border-radius: var(--radius);
+      padding: 14px;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem;
       outline: none;
       cursor: pointer;
-      transition: transform 0.08s ease, filter 0.18s ease, opacity 0.2s ease;
+      transition: transform 0.1s ease, filter 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.05em;
     }
-    button:hover { filter: brightness(1.1); }
-    button:active { transform: translateY(1px); }
-    button:disabled { cursor: not-allowed; opacity: 0.4; filter: grayscale(0.5); }
+    button:hover { 
+      filter: brightness(1.15); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    button:active { transform: translateY(2px); }
+    button:disabled { cursor: not-allowed; opacity: 0.4; filter: grayscale(0.6); }
 
     .btn-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 8px;
+      gap: 12px;
+      margin-top: 10px;
     }
 
     .btn-primary {
-      background: linear-gradient(180deg, #a67c3e, #805c28);
-      border-color: rgba(230, 200, 138, 0.4);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      background: linear-gradient(180deg, #b8860b, #8b6508);
+      border-color: rgba(255, 215, 0, 0.4);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.5);
       color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
 
     .btn-danger {
-      background: linear-gradient(180deg, #a63e3e, #802828);
+      background: linear-gradient(180deg, #c0392b, #8a2319);
       border-color: rgba(230, 138, 138, 0.4);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 10px rgba(0,0,0,0.5);
       color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
 
     .btn-secondary {
@@ -226,50 +243,55 @@
     }
 
     .btn-good {
-      background: linear-gradient(180deg, #276b53, #184735);
+      background: linear-gradient(180deg, #2e7d32, #1b4d1e);
       border-color: rgba(100, 200, 150, 0.3);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 10px rgba(0,0,0,0.5);
       color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
     }
 
     .meta-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
     .pill {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 0.92rem;
-      line-height: 1.45;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
     }
     .pill strong {
       display: block;
       font-size: 0.85rem;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       color: var(--gold);
       font-weight: normal;
+      letter-spacing: 0.05em;
     }
 
     .pill-timer {
-      background: rgba(217, 83, 79, 0.2);
-      border-color: var(--danger);
+      background: rgba(217, 83, 79, 0.15);
+      border: 1px solid var(--danger);
+      border-radius: var(--radius);
       color: #ffb3b3;
       text-align: center;
-      font-weight: 800;
-      font-size: 1.1rem;
+      font-size: 1.4rem;
+      padding: 4px 0;
+      text-shadow: 0 0 10px rgba(217, 83, 79, 0.5);
     }
 
     .items {
       display: grid;
-      gap: 10px;
-      max-height: 350px;
+      gap: 12px;
+      max-height: 380px;
       overflow-y: auto;
-      padding-right: 6px;
+      padding-right: 8px;
     }
 
     .items::-webkit-scrollbar,
@@ -282,74 +304,84 @@
     .selected-list::-webkit-scrollbar-thumb,
     .modal::-webkit-scrollbar-thumb,
     .achieve-container::-webkit-scrollbar-thumb {
-      background: var(--panel-3);
+      background: var(--gold);
       border-radius: 4px;
+    }
+    .items::-webkit-scrollbar-track,
+    .selected-list::-webkit-scrollbar-track,
+    .modal::-webkit-scrollbar-track,
+    .achieve-container::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
     }
 
     .item {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 10px;
+      gap: 12px;
       align-items: center;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.02);
+      padding: 14px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(0,0,0,0.2));
       border: 1px solid var(--line);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
 
-    .item.disabled { opacity: 0.6; pointer-events: none; }
+    .item.disabled { opacity: 0.5; pointer-events: none; }
 
     .item-main { display: grid; gap: 6px; }
     .item-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       font-weight: 700;
       color: var(--text);
+      font-size: 1.05rem;
     }
     .item-stats {
       color: var(--muted);
-      font-size: 0.86rem;
-      line-height: 1.4;
+      font-size: 0.85rem;
+      line-height: 1.5;
     }
 
     .quantity {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       justify-self: end;
       flex-wrap: nowrap;
     }
 
     .quantity button {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       padding: 0;
-      border-radius: 6px;
-      font-size: 1.2rem;
+      border-radius: 4px;
+      font-size: 1.4rem;
       line-height: 1;
       display: grid;
       place-items: center;
       background: var(--panel-2);
+      border-color: var(--line);
     }
 
     .qty-value {
-      min-width: 24px;
+      min-width: 28px;
       text-align: center;
-      font-weight: 700;
+      font-weight: 900;
       color: var(--gold-2);
-      font-size: 1.1rem;
+      font-size: 1.2rem;
+      font-family: 'Hina Mincho', serif;
     }
 
     .selected-list {
       display: grid;
-      gap: 8px;
-      max-height: 180px;
+      gap: 10px;
+      max-height: 200px;
       overflow-y: auto;
-      padding-right: 6px;
-      margin-bottom: 16px;
+      padding-right: 8px;
+      margin-bottom: 20px;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 16px;
+      padding-bottom: 20px;
     }
 
     .selected-item {
@@ -357,86 +389,89 @@
       justify-content: space-between;
       gap: 10px;
       align-items: center;
-      padding: 10px 12px;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.2);
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--line);
       font-size: 0.95rem;
     }
-    .selected-item small { color: var(--muted); font-size: 0.8rem; }
+    .selected-item small { color: var(--gold); font-size: 0.8rem; }
 
-    .results { display: grid; gap: 14px; }
+    .results { display: grid; gap: 16px; }
 
     .score-box {
       display: grid;
-      gap: 16px;
-      grid-template-columns: 120px 1fr;
+      gap: 20px;
+      grid-template-columns: 130px 1fr;
       align-items: center;
-      background: rgba(0, 0, 0, 0.15);
-      padding: 16px;
-      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 20px;
+      border-radius: var(--radius);
       border: 1px solid var(--line);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
     }
 
     @media (max-width: 640px) {
-      .score-box { grid-template-columns: 1fr; }
+      .score-box { grid-template-columns: 1fr; text-align: center; }
     }
 
     .score-circle {
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       margin: 0 auto;
       display: grid;
       place-items: center;
-      background: conic-gradient(var(--gold) 0deg, rgba(255,255,255,0.04) 0deg);
-      border: 1px solid var(--line-2);
-      box-shadow: 0 0 20px rgba(197, 163, 101, 0.1);
+      background: conic-gradient(var(--gold) 0deg, rgba(255,255,255,0.03) 0deg);
+      border: 2px solid var(--line-2);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.15);
     }
 
     .score-inner {
-      width: 86px;
-      height: 86px;
+      width: 96px;
+      height: 96px;
       border-radius: 50%;
-      background: linear-gradient(180deg, #23262e, #131519);
-      border: 1px solid rgba(197, 163, 101, 0.2);
+      background: linear-gradient(180deg, #202228, #101115);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       display: grid;
       place-items: center;
       text-align: center;
     }
 
     .score-value {
-      font-size: 1.6rem;
-      font-weight: 800;
+      font-size: 2.2rem;
       line-height: 1;
       color: var(--gold-2);
+      text-shadow: 0 0 10px rgba(243, 229, 171, 0.4);
     }
     .score-label {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      margin-top: 4px;
+      margin-top: 6px;
+      letter-spacing: 0.1em;
     }
 
     .dialogue {
-      line-height: 1.7;
-      min-height: 90px;
+      line-height: 1.8;
+      min-height: 100px;
       white-space: pre-wrap;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text);
+      font-style: italic;
     }
 
     .breakdown {
       display: grid;
-      gap: 8px;
-      font-size: 0.92rem;
+      gap: 10px;
+      font-size: 0.95rem;
       color: var(--muted);
-      background: rgba(0, 0, 0, 0.2);
-      padding: 14px;
-      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 16px;
+      border-radius: var(--radius);
       border: 1px solid var(--line);
     }
     .breakdown span.highlight { color: var(--text); font-weight: 700; }
-    .breakdown span.warn { color: var(--warn); font-weight: 700; }
+    .breakdown span.warn { color: var(--warn); font-weight: 700; text-shadow: 0 0 5px rgba(230, 126, 34, 0.4); }
 
     .footer-note {
       color: var(--muted);
@@ -447,29 +482,30 @@
     .empty {
       color: var(--muted);
       font-style: italic;
-      padding: 12px;
+      padding: 16px;
       text-align: center;
-      background: rgba(0,0,0,0.1);
-      border-radius: 8px;
+      background: rgba(0,0,0,0.15);
+      border-radius: var(--radius);
+      border: 1px dashed var(--line);
     }
 
     .locked-hint {
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       line-height: 1.6;
-      margin-top: 4px;
+      margin-top: 6px;
       text-align: center;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(10, 12, 16, 0.85);
+      background: rgba(8, 9, 12, 0.9);
       display: grid;
       place-items: center;
       padding: 20px;
       z-index: 30;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
 
     .overlay.hidden { display: none; }
@@ -479,8 +515,8 @@
       max-height: min(85vh, 760px);
       background: linear-gradient(180deg, var(--panel), var(--bg-2));
       border: 1px solid var(--line-2);
-      border-radius: 12px;
-      box-shadow: 0 32px 90px rgba(0,0,0,0.6);
+      border-radius: var(--radius);
+      box-shadow: 0 32px 90px rgba(0,0,0,0.8);
       padding: 24px;
       position: relative;
     }
@@ -493,27 +529,27 @@
     }
 
     .modal h3 {
-      margin: 0 0 12px;
-      font-size: 1.3rem;
+      margin: 0 0 14px;
+      font-size: 1.6rem;
       color: var(--gold-2);
     }
 
     .modal-text {
       color: var(--muted);
-      line-height: 1.7;
-      margin: 0 0 18px;
+      line-height: 1.8;
+      margin: 0 0 20px;
       font-size: 0.95rem;
     }
 
     .update-list {
       padding-left: 20px;
       color: var(--text);
-      line-height: 1.6;
+      line-height: 1.8;
       margin-bottom: 20px;
     }
 
     .update-list li {
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
 
     .modal-journey {
@@ -522,34 +558,35 @@
     }
 
     .modal-journey .hero-line {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       line-height: 1.6;
       color: var(--gold-2);
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.3);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
+      border-radius: var(--radius);
+      padding: 18px;
       text-align: center;
+      font-family: 'Hina Mincho', serif;
     }
 
     .journey-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 4px;
-      background: rgba(197, 163, 101, 0.15);
-      border: 1px solid rgba(197, 163, 101, 0.3);
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       color: var(--gold-2);
-      margin-bottom: 14px;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
     }
 
     .companion-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 14px;
     }
 
     @media (max-width: 680px) {
@@ -558,32 +595,33 @@
 
     .companion-card {
       text-align: left;
-      background: rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.25);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
+      border-radius: var(--radius);
+      padding: 18px;
       color: var(--text);
-      min-height: 120px;
+      min-height: 130px;
       position: relative;
     }
 
     .companion-card.selected {
-      background: rgba(197, 163, 101, 0.08);
+      background: rgba(212, 175, 55, 0.1);
       border-color: var(--gold);
-      box-shadow: 0 0 15px rgba(197, 163, 101, 0.15);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
     }
 
     .companion-head {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      font-size: 1.05rem;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 1.15rem;
       color: var(--gold-2);
+      font-family: 'Hina Mincho', serif;
     }
 
     .companion-emoji {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       width: 1.6em;
       text-align: center;
     }
@@ -605,23 +643,24 @@
 
     .modal-actions {
       display: flex;
-      gap: 12px;
-      margin-top: 20px;
+      gap: 14px;
+      margin-top: 24px;
     }
 
     .modal-actions button {
       flex: 1;
-      padding: 14px;
+      padding: 16px;
+      font-size: 1.05rem;
     }
 
     .loader {
       border: 4px solid var(--line);
       border-top: 4px solid var(--gold);
       border-radius: 50%;
-      width: 46px;
-      height: 46px;
+      width: 50px;
+      height: 50px;
       animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
+      margin: 0 auto 24px;
     }
     
     @keyframes spin { 
@@ -629,12 +668,11 @@
       100% { transform: rotate(360deg); } 
     }
 
-    /* 実績・ツールチップ関連 */
     .achieve-item {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--line);
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 14px 18px;
+      border-radius: var(--radius);
       position: relative;
       cursor: help;
       display: flex;
@@ -642,12 +680,12 @@
       align-items: center;
     }
     .achieve-item.unlocked {
-      border-color: rgba(197, 163, 101, 0.4);
-      background: rgba(197, 163, 101, 0.05);
+      border-color: rgba(212, 175, 55, 0.5);
+      background: rgba(212, 175, 55, 0.08);
       color: var(--gold-2);
     }
     .achieve-item.locked {
-      opacity: 0.5;
+      opacity: 0.4;
       filter: grayscale(1);
     }
     .tooltip {
@@ -660,12 +698,12 @@
       background: var(--bg-2);
       border: 1px solid var(--gold);
       color: var(--text);
-      padding: 10px 14px;
+      padding: 12px 16px;
       border-radius: 6px;
-      font-size: 0.85rem;
-      white-space: normal; /* 折り返しを許可 */
+      font-size: 0.9rem;
+      white-space: normal;
       width: max-content;
-      max-width: 260px; /* 横幅の制限 */
+      max-width: 280px;
       text-align: center;
       transition: 0.2s;
       z-index: 10;
@@ -673,7 +711,6 @@
       pointer-events: none;
     }
     
-    /* PC表示での上部アイテムのツールチップ調整 */
     .achieve-item:nth-child(1) .tooltip,
     .achieve-item:nth-child(2) .tooltip,
     .achieve-item:nth-child(3) .tooltip,
@@ -688,7 +725,6 @@
       opacity: 1;
     }
 
-    /* スマホ表示ではツールチップを画面下部に固定して見切れを防ぐ */
     @media (max-width: 680px) {
       .tooltip,
       .achieve-item:nth-child(1) .tooltip,
@@ -708,36 +744,38 @@
     }
 
     .achieve-category-title {
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       color: var(--gold);
-      margin: 16px 0 8px 0;
+      margin: 24px 0 10px 0;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 4px;
+      padding-bottom: 6px;
+      font-family: 'Hina Mincho', serif;
     }
 
     #toast-container {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
+      bottom: 24px;
+      right: 24px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       z-index: 100;
       pointer-events: none;
     }
     .toast {
       background: var(--panel);
       border: 1px solid var(--gold);
-      border-radius: 8px;
-      padding: 12px 20px;
+      border-radius: var(--radius);
+      padding: 14px 24px;
       color: var(--gold-2);
       animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.4s 4.6s forwards;
       pointer-events: auto;
       box-shadow: var(--shadow);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-weight: 700;
+      font-family: 'Noto Serif JP', serif;
     }
     @keyframes slideIn {
       from { transform: translateX(120%); opacity: 0; }
@@ -749,18 +787,18 @@
 
     #copy-toast-container {
       position: fixed;
-      bottom: 20px;
-      left: 20px;
+      bottom: 24px;
+      left: 24px;
       z-index: 100;
       pointer-events: none;
     }
     .copy-toast {
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.8);
       border: 1px solid var(--line);
       color: var(--text);
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.9rem;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-size: 0.95rem;
       animation: slideInLeft 0.3s ease, fadeOut 0.3s 2.7s forwards;
     }
     @keyframes slideInLeft {
@@ -768,7 +806,6 @@
       to { transform: translateX(0); opacity: 1; }
     }
     
-    /* 画面切り替え用のスタイル */
     #packingSection {
       display: none;
     }
@@ -796,7 +833,7 @@
         <h1>古代勇者の旅支度</h1>
         <p class="subtitle">条件をもとに荷物を詰め、同行者の満足度を高くしよう！</p>
       </div>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <button type="button" class="btn-info" id="achievementsBtn">🏆 実績一覧</button>
         <button type="button" class="btn-info" id="updateInfoBtn">✨ 更新情報</button>
       </div>
@@ -997,9 +1034,7 @@
       { id: 'fog', name: '濃霧', note: '見通しが悪い', foodNeedMod: 0, dangerMod: -3, weightMod: 0, capMod: 0 }
     ];
 
-    // 実績カテゴリ：進行度、プレイスタイル、キャラクター特化、特殊、タイムアタック
     const achievementsDef = [
-      // 進行度
       { id: 'first_play', category: '進行度', name: '荷造り初心者', desc: 'はじめて旅に出た(スコア問わず)', check: c => c.stats && c.stats.firstPlay },
       { id: 'ou_s', category: '進行度', name: '壱ノ護王の理解者', desc: '壱ノ護王を同行者にしてSランクを達成する', check: c => c.cId === 'ou' && c.rank === 'S' },
       { id: 'machi_s', category: '進行度', name: 'マッヒーの理解者', desc: 'マッヒーを同行者にしてSランクを達成する', check: c => c.cId === 'machi' && c.rank === 'S' },
@@ -1022,7 +1057,6 @@
           return s && s.ou && s.machi && s.fubuki && s.yocchi && s.nia;
       }},
 
-      // プレイスタイル
       { id: 'mini', category: 'プレイスタイル', name: '生粋のミニマリスト', desc: 'アイテムの総数を3個以下にしてSランクを達成する', check: c => c.totalItems <= 3 && c.rank === 'S' },
       { id: 'pack_master', category: 'プレイスタイル', name: '荷造りの達人', desc: 'サイズと重さの両方を、上限値ぴったりにしてSランクを達成する', check: c => c.t.size === c.r.capacity && c.t.weight === c.r.weightLimit && c.rank === 'S' },
       { id: 'health', category: 'プレイスタイル', name: '健康志向', desc: 'ポーションと薬草を一つも使わずにSランクを達成する', check: c => !c.items.some(i => i.id === 'potion' || i.id === 'herb') && c.rank === 'S' },
@@ -1032,7 +1066,6 @@
           return fTypes.every(fid => c.items.some(i => i.id === fid)) && c.rank === 'S';
       }},
 
-      // キャラクター特化
       { id: 'sweets', category: 'キャラクター特化', name: 'スイーツパラダイス', desc: 'クッキー、ジャム、ドライフルーツのみで必要食料を満たしてSランクを達成する', check: c => {
           const foodItems = c.items.filter(i => i.food > 0);
           const isOnlySweets = foodItems.length > 0 && foodItems.every(i => ['cookie', 'jam', 'fruit'].includes(i.id));
@@ -1043,14 +1076,12 @@
       { id: 'safe', category: 'キャラクター特化', name: '絶対安全領域', desc: '合計の危険度をマイナスにしてSランクを達成する', check: c => c.t.danger < 0 && c.rank === 'S' },
       { id: 'warm', category: 'キャラクター特化', name: 'ぬくもりの旅', desc: 'ふわふわの毛布を2つ以上持っていき、士気を20以上にしてSランクを達成する', check: c => c.items.filter(i => i.id === 'blanket').length >= 2 && c.t.morale >= 20 && c.rank === 'S' },
       
-      // 特殊
       { id: 'diet', category: '特殊', name: '孤高の偏食家', desc: '偏食ペナルティを受けながらもSランクを達成する', check: c => c.dietPenalty && c.rank === 'S' },
       { id: 'edge', category: '特殊', name: 'ギリギリの生還', desc: 'スコアがぴったり60点でクリアする', check: c => c.score === 60 },
       { id: 'danger', category: '特殊', name: '旅は危険と隣り合わせ', desc: '危険度を超過しながらもSランクを達成する', check: c => c.overDanger > 0 && c.rank === 'S' },
       { id: 'eat_over', category: '特殊', name: '暴食の王', desc: '食料を45以上にしてSランクを達成する', check: c => c.t.food >= 45 && c.rank === 'S' },
       { id: 'eat_less', category: '特殊', name: '小食の王', desc: '食料を15以下にしてSランクを達成する', check: c => c.t.food <= 15 && c.rank === 'S' },
 
-      // タイムアタック
       { id: 'ta_first', category: 'タイムアタック', name: '大慌て荷造り', desc: 'はじめてタイムアタックモードで旅に出た(スコア問わず)', check: c => c.stats && c.stats.taFirstPlay },
       { id: 'ta_s', category: 'タイムアタック', name: '対応力抜群', desc: 'タイムアタックモードでSランクを達成する', check: c => c.isTA && c.rank === 'S' },
       { id: 'ta_100', category: 'タイムアタック', name: '対応力カンスト', desc: 'タイムアタックモードで100点満点を達成する', check: c => c.isTA && c.score === 100 },
@@ -1072,7 +1103,6 @@
     let pendingCompanion = null;
     let lastResultText = "";
 
-    // タイムアタック用変数
     let isTimeAttack = false;
     let taTimerInterval = null;
     let taTimeLeft = 30;
@@ -1821,12 +1851,12 @@
       let countdown = 3;
       els.modal.innerHTML = `
         <div class="modal-content-wrap" style="text-align: center; justify-content: center;">
-          <h2 style="color: var(--warn); font-size: 2rem;">急いで荷物を詰めろ！</h2>
-          <div style="margin: 20px 0; display:flex; gap:10px; justify-content:center;">
+          <h2 style="color: var(--warn); font-size: 2.5rem; text-shadow: 0 0 10px rgba(230,126,34,0.5);">急いで荷物を詰めろ！</h2>
+          <div style="margin: 20px 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
             <div class="pill">場所: ${pendingJourney.name} × ${pendingJourney.weather.name}</div>
             <div class="pill">同行者: ${companions[pendingCompanion].name}</div>
           </div>
-          <div id="countdownNumber" style="font-size: 6rem; font-weight: 800; color: var(--gold-2); margin-top:20px;">${countdown}</div>
+          <div id="countdownNumber" style="font-size: 8rem; font-weight: 800; color: var(--gold-2); margin-top:20px; font-family: 'Hina Mincho', serif;">${countdown}</div>
         </div>
       `;
 
@@ -1897,13 +1927,16 @@
             <div class="journey-badge">お知らせ</div>
             <h3>更新情報</h3>
             <ul class="update-list">
+              <!-- ▼▼▼ ここに更新情報を書く ▼▼▼ -->
+              <li>2026/06/02：フォントの調整とデザインのブラッシュアップを行いました。</li>
               <li>2026/05/11：スマホでの実績の表示崩れを修正し、チュートリアルにタイムアタックの説明を追加しました。</li>
               <li>2026/05/11：タイムアタックモードを実装し、実績をカテゴリごとに分けて確認できるようにしました。</li>
               <li>2026/05/10：新アイテム「スパイス」を追加しました。UIの改修を行いました。</li>
               <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。難易度調整を行いました。</li>
               <li>2026/05/08：様々な条件で獲得できる「実績解除（アチーブメント）」を追加しました。獲得した実績は「実績一覧」から確認できます。</li>
               <li>2026/05/07：「古代勇者の旅支度」を試作しました。</li>
-              </ul>
+              <!-- ▲▲▲ ここに更新情報を書く ▲▲▲ -->
+            </ul>
             <p class="modal-text">今後のアップデート予定<br>・新たな同行者やアイテムの追加</p>
           </div>
           <div class="modal-actions" style="margin-top: 20px;">
