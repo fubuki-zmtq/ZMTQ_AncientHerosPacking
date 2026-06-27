@@ -915,6 +915,7 @@
               <button class="btn-secondary" id="resetBtn" style="display: none;">荷物を全部外す</button>
               <button class="btn-primary" id="restartBtn" style="display: none; grid-column: 1 / -1;">もう一度旅に出る</button>
               <button class="btn-info" id="shareBtn" style="display: none; grid-column: 1 / -1; margin-top: 8px;">結果をコピーして共有</button>
+              <button class="btn-primary" id="xPostBtn" style="display: none; grid-column: 1 / -1; margin-top: 8px; background: linear-gradient(180deg, #2c3e50, #1a252f); border-color: #34495e;">𝕏 でポスト</button>
             </div>
             <div class="footer-note">※ よっちの謎袋は旅に出る時に中身が確定するよ。ハイリスクハイリターン！</div>
           </div>
@@ -1113,6 +1114,7 @@
     let pendingJourney = null;
     let pendingCompanion = null;
     let lastResultText = "";
+    let xShareText = "";
 
     let isTimeAttack = false;
     let taTimerInterval = null;
@@ -1146,6 +1148,7 @@
       resetBtn: document.getElementById('resetBtn'),
       restartBtn: document.getElementById('restartBtn'),
       shareBtn: document.getElementById('shareBtn'),
+      xPostBtn: document.getElementById('xPostBtn'),
       timerDisplayWrap: document.getElementById('timerDisplayWrap'),
       timerDisplay: document.getElementById('timerDisplay')
     };
@@ -1707,6 +1710,12 @@
       const taHeader = isTimeAttack ? `[タイムアタックモード] 残り時間: ${taTimeLeft}秒\n` : '';
       lastResultText = `古代勇者の旅支度\n${taHeader}難易度: ${d.label}\n場所: ${currentJourney.name} × ${currentJourney.weather.name}\n同行者: ${companions[currentCompanion].name}\nスコア: ${score}点 (${rank})\n\n【持ち物】\n${itemsString}\n\nサイズ: ${totals.size}/${rules.capacity}\n重さ: ${totals.weight}/${rules.weightLimit}\n食料: ${totals.food}/${rules.foodNeed}\n危険度: ${totals.danger}/${rules.dangerLimit}\n士気: ${morale}`;
 
+      if (isTimeAttack) {
+        xShareText = `タイムアタックモード\n条件：${currentJourney.name}×${currentJourney.weather.name}\n同行者：${companions[currentCompanion].name}\n残り時間：${taTimeLeft}秒\nスコア：${score}点 (${rank})\n\n古代勇者の旅支度\nhttps://fubuki-zmtq.github.io/ZMTQ_AncientHerosPacking/\n\n#古代勇者の旅支度`;
+      } else {
+        xShareText = `難易度：${d.label} / ${currentJourney.name}×${currentJourney.weather.name}\n同行者：${companions[currentCompanion].name}\nスコア：${score}点 (${rank})\n\n古代勇者の旅支度\nhttps://fubuki-zmtq.github.io/ZMTQ_AncientHerosPacking/\n\n#古代勇者の旅支度`;
+      }
+
       els.modal.innerHTML = `
         <div class="modal-content-wrap">
           <div style="flex: 1; overflow-y: auto; padding-right: 8px;">
@@ -1765,6 +1774,7 @@
       els.resetBtn.style.display = 'none';
       els.restartBtn.style.display = 'block';
       els.shareBtn.style.display = 'block';
+      els.xPostBtn.style.display = 'block';
       
       renderItems();
       renderSelectedList();
@@ -1916,6 +1926,7 @@
       els.resetBtn.style.display = 'block';
       els.restartBtn.style.display = 'none';
       els.shareBtn.style.display = 'none';
+      els.xPostBtn.style.display = 'none';
       
       if (!isTimeAttack) {
         els.timerDisplayWrap.style.display = 'none';
@@ -1939,10 +1950,8 @@
             <h3>更新情報</h3>
             <ul class="update-list">
               <!-- ▼▼▼ ここに更新情報を書く ▼▼▼ -->
-              <li>2026/06/02：フォントの調整とデザインのブラッシュアップを行いました。</li>
-              <li>2026/05/11：スマホでの実績の表示崩れを修正し、チュートリアルにタイムアタックの説明を追加しました。</li>
-              <li>2026/05/11：タイムアタックモードを実装し、実績をカテゴリごとに分けて確認できるようにしました。</li>
-              <li>2026/05/10：新アイテム「スパイス」を追加しました。UIの改修を行いました。</li>
+              <li>2026/05/12：リザルト画面に𝕏(旧Twitter)へ冒険結果をコンパクトに投稿できる機能を追加しました。</li>
+              <li>2026/05/10：UIの改修とチュートリアルを追加しました。</li>
               <li>2026/05/08：新マップ「魔王領」と、結果をコピーできる共有ボタンを追加しました。難易度調整を行いました。</li>
               <li>2026/05/08：様々な条件で獲得できる「実績解除（アチーブメント）」を追加しました。獲得した実績は「実績一覧」から確認できます。</li>
               <li>2026/05/07：「古代勇者の旅支度」を試作しました。</li>
@@ -2084,6 +2093,11 @@
           alert('コピーに失敗しました。');
         });
       }
+    });
+
+    els.xPostBtn.addEventListener('click', () => {
+      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}`;
+      window.open(url, '_blank');
     });
 
     els.difficulty.addEventListener('change', () => {
