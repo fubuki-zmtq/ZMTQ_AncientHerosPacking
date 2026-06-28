@@ -434,8 +434,10 @@
       display: grid;
       place-items: center;
       background: conic-gradient(var(--gold) 0%, rgba(255,255,255,0.04) 0%);
-      border: 2px solid var(--line-2);
-      box-shadow: 0 0 25px rgba(212, 175, 55, 0.15);
+      border: 2px solid transparent; /* 透明な枠で背景の広がりをブロック */
+      background-clip: padding-box; /* 背景が枠の下に潜り込むのを防ぐ */
+      box-shadow: 0 0 0 2px var(--line-2), 0 0 25px rgba(212, 175, 55, 0.15); /* 外枠を影として描画 */
+      transform: translateZ(0); /* スマホでの円のフチを滑らかにするおまじない */
     }
 
     .score-inner {
